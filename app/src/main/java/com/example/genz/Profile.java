@@ -79,7 +79,7 @@ public class Profile extends AppCompatActivity {
             public void onClick(View v) {
                 AlertDialog.Builder dialog=new AlertDialog.Builder(Profile.this);
                 dialog.setTitle("Are you sure?");
-                dialog.setMessage("Deleting this account will result in completely removing your account from Spendee and you will no longer be able to access this account. " +
+                dialog.setMessage("Deleting this account will result in completely removing your account from Finora and you will no longer be able to access this account. " +
                         "In future if you wish to use the same email then you need to register again.");
                 dialog.setPositiveButton("DELETE", new DialogInterface.OnClickListener() {
                     @Override
