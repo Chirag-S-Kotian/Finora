@@ -1,4 +1,4 @@
-package com.example.genz;
+package com.example.finora;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
