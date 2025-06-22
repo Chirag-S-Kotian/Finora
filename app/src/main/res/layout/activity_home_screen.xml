@@ -20,7 +20,7 @@
             android:layout_height="match_parent"
             android:fontFamily="sans-serif"
             android:gravity="center"
-            android:text="Spendee"
+            android:text="Finora"
             android:textAppearance="?android:textAppearanceLarge"
             android:textSize="32dp" />
 
