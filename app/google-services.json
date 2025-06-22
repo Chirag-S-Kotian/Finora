@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "488002623702",
+    "firebase_url": "https://spendee-b2eea-default-rtdb.firebaseio.com",
+    "project_id": "spendee-b2eea",
+    "storage_bucket": "spendee-b2eea.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:488002623702:android:410db6022177cfcec49177",
+        "android_client_info": {
+          "package_name": "com.example.genz"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_hDI6AeQNQQWaEEC6twHozh1Ga71il9c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

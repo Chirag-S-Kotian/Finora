@@ -1,0 +1,174 @@
+package com.example.genz;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+public class home_screen extends AppCompatActivity {
+    private EditText mEmail;
+    private EditText mPass;
+    private CheckBox remember;
+
+    private ProgressDialog mDialog;
+
+    private FirebaseAuth mAuth;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_home_screen);
+
+        mAuth = FirebaseAuth.getInstance();
+        mDialog = new ProgressDialog(this);
+
+        // Check if user is already logged in and remembered
+        SharedPreferences preferences = getSharedPreferences("checkbox", MODE_PRIVATE);
+        String checkbox = preferences.getString("remember", "");
+        if (checkbox.equals("true") && mAuth.getCurrentUser() != null) {
+            startActivity(new Intent(home_screen.this, first_home_page.class));
+            finish();
+            return;
+        }
+
+        loginDetails();
+    }
+
+    private void loginDetails() {
+        mEmail = findViewById(R.id.email_login);
+        mPass = findViewById(R.id.password_login);
+        Button btnLogin = findViewById(R.id.btn_login);
+        TextView mforget_password = findViewById(R.id.forgot_password);
+        TextView mSignUpHere = findViewById(R.id.signup_reg);
+        remember = findViewById(R.id.checkBox2);
+
+        btnLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String email = mEmail.getText().toString().trim();
+                String pass = mPass.getText().toString().trim();
+                if (TextUtils.isEmpty(email)) {
+                    mEmail.setError("Email required.");
+                    mEmail.requestFocus();
+                    return;
+                }
+                if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    mEmail.setError("Enter a valid email address.");
+                    mEmail.requestFocus();
+                    return;
+                }
+                if (TextUtils.isEmpty(pass)) {
+                    mPass.setError("Password required.");
+                    mPass.requestFocus();
+                    return;
+                }
+                if (pass.length() < 6) {
+                    mPass.setError("Password must be at least 6 characters.");
+                    mPass.requestFocus();
+                    return;
+                }
+                mDialog.setMessage("Logging in...");
+                mDialog.show();
+                mAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        mDialog.dismiss();
+                        if (task.isSuccessful()) {
+                            checkEmailVerification();
+                        } else {
+                            String errorMsg = "Login failed.";
+                            if (task.getException() != null) {
+                                errorMsg = task.getException().getMessage();
+                            }
+                            Toast.makeText(home_screen.this, errorMsg, Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+            }
+        });
+
+        remember.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(buttonView.isChecked())
+                {
+                    SharedPreferences preferences=getSharedPreferences("checkbox",MODE_PRIVATE);
+                    SharedPreferences.Editor editor=preferences.edit();
+                    editor.putString("remember","true");
+                    editor.apply();
+                    Toast.makeText(home_screen.this,"Remember me Checked..",Toast.LENGTH_SHORT).show();
+                }
+                else if(!buttonView.isChecked())
+                {
+                    SharedPreferences preferences=getSharedPreferences("checkbox",MODE_PRIVATE);
+                    SharedPreferences.Editor editor=preferences.edit();
+                    editor.putString("remember","false");
+                    editor.apply();
+                    Toast.makeText(home_screen.this,"Remember me Unchecked..",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        mSignUpHere.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(home_screen.this, Registration.class);
+                startActivity(intent);
+                finish(); // Close login activity when going to registration
+            }
+        });
+
+        mforget_password.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(home_screen.this, resetpassword.class);
+                startActivity(intent);
+                // Don't finish here to allow back navigation
+            }
+        });
+    }
+
+    private void checkEmailVerification() {
+        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+        if (firebaseUser == null) {
+            Toast.makeText(this, "Authentication error occurred", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        if (firebaseUser.isEmailVerified()) {
+            // Save remember me preference if checked
+            if (remember.isChecked()) {
+                SharedPreferences preferences = getSharedPreferences("checkbox", MODE_PRIVATE);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString("remember", "true");
+                editor.apply();
+            }
+            
+            Intent intent = new Intent(home_screen.this, first_home_page.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+            Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Please verify your email first", Toast.LENGTH_LONG).show();
+            mAuth.signOut();
+            // Optionally, you could show a dialog to resend verification email
+        }
+    }
+}
