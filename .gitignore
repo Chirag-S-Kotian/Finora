@@ -40,3 +40,6 @@ app/src/main/res/font/*.xml
 # Ignore APKs
 *.apk
 *.ap_
+
+# Firebase config (do not track sensitive keys)
+app/google-services.json
