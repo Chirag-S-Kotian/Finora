@@ -1,4 +1,4 @@
-package com.example.genz;
+package com.example.finora;
 
 import android.content.Intent;
 import android.os.Bundle;
