@@ -24,7 +24,7 @@
         android:layout_gravity="center"
         android:layout_marginTop="-30dp"
         android:fontFamily="sans-serif"
-        android:text="@string/spendee1"
+        android:text="Finora"
         android:id="@+id/spendee_text1"
         android:textAlignment="center"
         android:textColor="@color/black"
