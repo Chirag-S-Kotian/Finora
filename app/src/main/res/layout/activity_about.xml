@@ -23,7 +23,7 @@
         android:layout_gravity="center"
         android:fontFamily="sans-serif"
         android:layout_marginTop="5dp"
-        android:text="Spendee"
+        android:text="Finora"
         android:textAlignment="center"
         android:textColor="@color/black"
         android:textSize="35dp" />
