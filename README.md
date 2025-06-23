@@ -66,6 +66,10 @@ Finora is a personal finance management Android app that helps users track incom
   - Validation: Email format, password length
 - **Logout:**
   - Firebase signOut
+- **Password Reset:**
+  - Endpoint: Firebase Auth (Email/Password)
+  - Fields: Email
+  - Action: Send password reset email
 
 ### Database Structure (Firebase Realtime Database)
 - `/IncomeData/{uid}/` — Stores user income entries
