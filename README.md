@@ -27,6 +27,7 @@ Finora is a personal finance management Android app that helps users track incom
 3. **Configure Firebase:**
    - Download your `google-services.json` from Firebase Console and place it in `app/`.
    - Ensure your Firebase project has Authentication (Email/Password), Realtime Database, and Storage enabled.
+   
 4. **Build the project:**
    - Sync Gradle and build the app.
 5. **Run on an emulator or device.**
