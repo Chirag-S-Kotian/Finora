@@ -88,6 +88,7 @@ Finora is a personal finance management Android app that helps users track incom
 }
 ```
 
+
 ### Storage
 - Used for profile images and file uploads (Firebase Storage)
 
