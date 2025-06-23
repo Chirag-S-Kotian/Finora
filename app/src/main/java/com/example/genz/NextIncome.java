@@ -10,7 +10,7 @@ import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.genz.R;
+import com.example.finora.R;
 
 public class NextIncome extends AppCompatActivity {
     Button go;
