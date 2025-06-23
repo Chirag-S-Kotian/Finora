@@ -87,6 +87,7 @@ Finora is a personal finance management Android app that helps users track incom
   }
 }
 ```
+
 #### Example Expense Entry
 ```json
 {
