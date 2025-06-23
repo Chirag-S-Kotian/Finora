@@ -72,6 +72,7 @@ Finora is a personal finance management Android app that helps users track incom
 - `/ExpenseData/{uid}/` — Stores user expense entries
 - Each entry contains: amount, type, note, date, etc.
 - `/UserProfile/{uid}/` — Stores user profile information
+- `/Feedback/{uid}/` — Stores user feedback
 
 #### Example Income Entry
 ```json
