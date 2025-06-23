@@ -20,7 +20,7 @@ Finora is a personal finance management Android app that helps users track incom
 ## Setup Instructions
 1. **Clone the repository:**
    ```sh
-   git clone <repo-url>
+   git clone https://github.com/Chirag-S-Kotian/Finora.git
    cd genz
    ```
 2. **Open in Android Studio.**
