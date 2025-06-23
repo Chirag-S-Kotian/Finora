@@ -49,6 +49,7 @@ Finora is a personal finance management Android app that helps users track incom
         ```groovy
         apply plugin: 'com.google.gms.google-services'
         ```
+        - Sync your project with Gradle files.
 4. **Build the project:**
    - Sync Gradle and build the app.
 5. **Run on an emulator or device.**
