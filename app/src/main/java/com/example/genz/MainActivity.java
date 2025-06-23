@@ -14,8 +14,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.genz.R;
-import com.example.genz.home_screen;
+import com.example.finora.R;
+import com.example.finora.home_screen;
 
 public class MainActivity extends AppCompatActivity {
     private static final int SPLASH_TIME_OUT=3200;
