@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.genz.R;
+import com.example.finora.R;
 
 public class Finalinc extends AppCompatActivity {
     TextView T1,T2,T3,T4,T5,T6,T7;
