@@ -12,7 +12,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.ListView;
 
-import com.example.genz.R;
+import com.example.finora.R;
 import com.example.myapplication.Model.Data;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
