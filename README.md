@@ -25,6 +25,7 @@ It features user authentication, income and expense tracking, a dashboard with a
 - Firebase Authentication, Realtime Database, Storage
 - MPAndroidChart for charts
 - Material Components for UI
+- Glide for image loading
 
 ## Setup Instructions
 1. **Clone the repository:**
