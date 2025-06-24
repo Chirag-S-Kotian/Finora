@@ -34,8 +34,10 @@ It features user authentication, income and expense tracking, a dashboard with a
    git clone https://github.com/Chirag-S-Kotian/Finora.git
    cd genz
    ```
-   
+
 2. **Open in Android Studio.**
+    - Ensure you have the latest version of Android Studio installed.
+    - Open the project by selecting the `genz` directory.
 3. **Configure Firebase:**
    - Download your `google-services.json` from Firebase Console and place it in `app/`.
    - Ensure your Firebase project has Authentication (Email/Password), Realtime Database, and Storage enabled.
