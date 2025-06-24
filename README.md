@@ -39,6 +39,7 @@ It features user authentication, income and expense tracking, a dashboard with a
     - Ensure you have the latest version of Android Studio installed.
     - Open the project by selecting the `genz` directory.
     - Make sure you have the Android SDK and necessary components installed (Android 12 or higher recommended).
+    
 3. **Configure Firebase:**
    - Download your `google-services.json` from Firebase Console and place it in `app/`.
    - Ensure your Firebase project has Authentication (Email/Password), Realtime Database, and Storage enabled.
