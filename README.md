@@ -1,15 +1,21 @@
-# Finora
+# CashKeeper
 
-Finora is a personal finance management Android app that helps users track income, expenses, and manage their finances with a modern UI, dark/light theme support, and Firebase backend integration.
+CashKeeper is a personal finance management Android app that helps users track income, expenses, and manage their finances with a modern UI and Firebase backend integration.
 
 ## Features
 - User registration, login, and logout (with Firebase Authentication)
 - Add, view, and search income and expenses
 - Dashboard with charts and analytics (theme-aware)
 - Profile management and password reset
-- Dark/Light theme toggle
 - Income tax and EMI calculator
 - Feedback and About sections
+- Fast search for transactions
+- Modern splash screen with custom font
+- Detailed error messages for login failures
+- Consistent color palette for all screens
+- Secure password reset via email
+- Profile image upload
+- Export data as CSV
 
 ## Tech Stack
 - Java (Android)
@@ -123,6 +129,8 @@ Finora is a personal finance management Android app that helps users track incom
 - Search and filter your transactions
 - Access calculators and profile from the navigation menu
 
+If login fails, detailed error messages will be shown.
+
 ## Security
 - Sensitive files like `google-services.json` are excluded from git tracking
 - All user data is stored securely in Firebase
@@ -131,4 +139,4 @@ Finora is a personal finance management Android app that helps users track incom
 Pull requests are welcome. For major changes, please open an issue first.
 
 ## License
-[Apache 2.0](LICENSE)
+This project, CashKeeper, is licensed under the [Apache 2.0](LICENSE) license.
