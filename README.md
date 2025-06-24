@@ -27,6 +27,7 @@ It features user authentication, income and expense tracking, a dashboard with a
 - Material Components for UI
 - Glide for image loading
 
+
 ## Setup Instructions
 1. **Clone the repository:**
    ```sh
