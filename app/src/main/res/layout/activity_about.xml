@@ -21,9 +21,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:fontFamily="sans-serif"
+        android:fontFamily="@font/montserrat"
         android:layout_marginTop="5dp"
-        android:text="Finora"
+        android:text="cashKeeper"
         android:textAlignment="center"
         android:textColor="@color/black"
         android:textSize="35dp" />
