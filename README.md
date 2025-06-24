@@ -34,6 +34,7 @@ It features user authentication, income and expense tracking, a dashboard with a
    git clone https://github.com/Chirag-S-Kotian/Finora.git
    cd genz
    ```
+   
 2. **Open in Android Studio.**
 3. **Configure Firebase:**
    - Download your `google-services.json` from Firebase Console and place it in `app/`.
