@@ -23,11 +23,11 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="-30dp"
-        android:fontFamily="sans-serif"
-        android:text="Finora"
+        android:fontFamily="@font/montserrat"
+        android:text="cashKeeper"
         android:id="@+id/spendee_text1"
         android:textAlignment="center"
-        android:textColor="@color/black"
+        android:textColor="@color/toolbar_color"
         android:textSize="50sp"
         android:textStyle="italic" />
 
