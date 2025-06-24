@@ -66,21 +66,25 @@ public class home_screen extends AppCompatActivity {
                 if (TextUtils.isEmpty(email)) {
                     mEmail.setError("Email required.");
                     mEmail.requestFocus();
+                    Toast.makeText(home_screen.this, "Please enter your email.", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                     mEmail.setError("Enter a valid email address.");
                     mEmail.requestFocus();
+                    Toast.makeText(home_screen.this, "Invalid email format.", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if (TextUtils.isEmpty(pass)) {
                     mPass.setError("Password required.");
                     mPass.requestFocus();
+                    Toast.makeText(home_screen.this, "Please enter your password.", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if (pass.length() < 6) {
                     mPass.setError("Password must be at least 6 characters.");
                     mPass.requestFocus();
+                    Toast.makeText(home_screen.this, "Password too short.", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 mDialog.setMessage("Logging in...");
@@ -93,8 +97,30 @@ public class home_screen extends AppCompatActivity {
                             checkEmailVerification();
                         } else {
                             String errorMsg = "Login failed.";
-                            if (task.getException() != null) {
-                                errorMsg = task.getException().getMessage();
+                            Exception ex = task.getException();
+                            if (ex != null) {
+                                String msg = ex.getMessage();
+                                if (msg != null) {
+                                    if (msg.contains("There is no user record")) {
+                                        errorMsg = "No account found with this email.";
+                                        mEmail.setError(errorMsg);
+                                        mEmail.requestFocus();
+                                    } else if (msg.contains("The password is invalid")) {
+                                        errorMsg = "Incorrect password.";
+                                        mPass.setError(errorMsg);
+                                        mPass.requestFocus();
+                                    } else if (msg.contains("The email address is badly formatted")) {
+                                        errorMsg = "Invalid email format.";
+                                        mEmail.setError(errorMsg);
+                                        mEmail.requestFocus();
+                                    } else if (msg.contains("A network error")) {
+                                        errorMsg = "Network error. Please check your connection.";
+                                    } else if (msg.contains("blocked all requests from this device")) {
+                                        errorMsg = "Too many failed attempts. Try again later.";
+                                    } else {
+                                        errorMsg = msg;
+                                    }
+                                }
                             }
                             Toast.makeText(home_screen.this, errorMsg, Toast.LENGTH_LONG).show();
                         }
