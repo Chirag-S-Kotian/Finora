@@ -137,6 +137,7 @@ It features user authentication, income and expense tracking, a dashboard with a
 
 ### Feedback
 - User feedback is stored under `/Feedback/{uid}/`
+- Contains fields like feedback text, timestamp, etc.
 ### Storage
 - Used for profile images and file uploads (Firebase Storage)
 - Images are stored under `/ProfileImages/{uid}/`
