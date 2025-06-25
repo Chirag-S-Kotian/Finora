@@ -145,6 +145,7 @@ If login fails, detailed error messages will be shown for each scenario (invalid
 
 ## Security
 - Firebase Authentication is used for secure user management
+- Data is stored securely in Firebase Realtime Database
 - Sensitive files like `google-services.json` are excluded from git tracking
 - All user data is stored securely in Firebase
 
