@@ -1,20 +1,20 @@
 # CashKeeper
 
 CashKeeper is a personal finance management Android app that helps users track income, expenses, and manage their finances with a modern UI and Firebase backend integration.
-It features user authentication, income and expense tracking, a dashboard with analytics, and various financial calculators. The app is designed to be user-friendly and visually appealing, with support for both light and dark themes.
+It features user authentication, income and expense tracking, a dashboard with analytics, and various financial calculators. The app is designed to be user-friendly and visually appealing, with a consistent light theme, custom fonts, and a modern color palette.
 
 
 ## Features
 - User registration, login, and logout (with Firebase Authentication)
 - Add, view, and search income and expenses
-- Dashboard with charts and analytics (theme-aware)
+- Dashboard with charts and analytics (daily/monthly filters)
 - Profile management and password reset
 - Income tax and EMI calculator
 - Feedback and About sections
 - Fast search for transactions
-- Modern splash screen with custom font
-- Detailed error messages for login failures
-- Consistent color palette for all screens
+- Modern splash screen with custom font (Montserrat, Roboto)
+- Detailed error messages for login failures (invalid email, wrong password, network issues, etc.)
+- Consistent color palette and custom fonts for all screens
 - Secure password reset via email
 - Profile image upload
 - Export data as CSV
@@ -66,12 +66,15 @@ It features user authentication, income and expense tracking, a dashboard with a
         apply plugin: 'com.google.gms.google-services'
         ```
         - Sync your project with Gradle files.
+    
+4. **Fonts and Colors:**
+   - The app uses downloadable fonts (Montserrat, Roboto). No manual font file setup is required.
+   - The color palette is defined in `res/values/colors.xml` and enforced throughout the app.
 
-        
-4. **Build the project:**
+5. **Build the project:**
    - Sync Gradle and build the app.
-5. **Run on an emulator or device.**
-6. **Sign in with your Firebase account to test the app.**
+6. **Run on an emulator or device.**
+7. **Sign in with your Firebase account to test the app.**
 
 ## API Details
 ### Authentication
@@ -134,12 +137,11 @@ It features user authentication, income and expense tracking, a dashboard with a
 ## Usage
 - Register or login to your account
 - Add income/expense entries
-- View dashboard for analytics
-- Use the theme toggle in the toolbar
+- View dashboard for analytics (with daily/monthly filters)
 - Search and filter your transactions
 - Access calculators and profile from the navigation menu
 
-If login fails, detailed error messages will be shown.
+If login fails, detailed error messages will be shown for each scenario (invalid email, wrong password, no user, network error, too many attempts, etc.).
 
 ## Security
 - Sensitive files like `google-services.json` are excluded from git tracking
