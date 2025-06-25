@@ -147,6 +147,7 @@ If login fails, detailed error messages will be shown for each scenario (invalid
 - Sensitive files like `google-services.json` are excluded from git tracking
 - All user data is stored securely in Firebase
 
+
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first.
 
