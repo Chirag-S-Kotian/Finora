@@ -134,6 +134,7 @@ It features user authentication, income and expense tracking, a dashboard with a
 ### Storage
 - Used for profile images and file uploads (Firebase Storage)
 
+
 ## Usage
 - Register or login to your account
 - Add income/expense entries
