@@ -144,6 +144,7 @@ It features user authentication, income and expense tracking, a dashboard with a
 If login fails, detailed error messages will be shown for each scenario (invalid email, wrong password, no user, network error, too many attempts, etc.).
 
 ## Security
+- Firebase Authentication is used for secure user management
 - Sensitive files like `google-services.json` are excluded from git tracking
 - All user data is stored securely in Firebase
 
