@@ -150,5 +150,6 @@ If login fails, detailed error messages will be shown for each scenario (invalid
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first.
 
+
 ## License
 This project, CashKeeper, is licensed under the [Apache 2.0](LICENSE) license.
