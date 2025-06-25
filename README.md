@@ -133,6 +133,7 @@ It features user authentication, income and expense tracking, a dashboard with a
 ```
 ### Profile Management
 - User profile data is stored under `/UserProfile/{uid}/`
+- Contains fields like name, email, profile image URL, etc.
 ### Storage
 - Used for profile images and file uploads (Firebase Storage)
 - Images are stored under `/ProfileImages/{uid}/`
