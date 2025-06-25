@@ -143,6 +143,7 @@ It features user authentication, income and expense tracking, a dashboard with a
 - Dashboard analytics are generated using data from the Realtime Database
 
 
+
 ## Usage
 - Register or login to your account
 - Add income/expense entries
