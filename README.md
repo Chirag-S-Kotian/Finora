@@ -133,6 +133,8 @@ It features user authentication, income and expense tracking, a dashboard with a
 ```
 ### Storage
 - Used for profile images and file uploads (Firebase Storage)
+### Analytics
+- Dashboard analytics are generated using data from the Realtime Database
 
 
 ## Usage
