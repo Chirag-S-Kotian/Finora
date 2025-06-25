@@ -131,6 +131,7 @@ It features user authentication, income and expense tracking, a dashboard with a
   }
 }
 ```
+### Profile Management
 ### Storage
 - Used for profile images and file uploads (Firebase Storage)
 - Images are stored under `/ProfileImages/{uid}/`
