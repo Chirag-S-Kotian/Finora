@@ -197,7 +197,6 @@ A modern personal finance management app for Android, built with Firebase and MP
 - View dashboard for analytics (with daily/monthly filters)
 - Search and filter your transactions
 - Access calculators and profile from the navigation menu
-
 If login fails, detailed error messages will be shown for each scenario (invalid email, wrong password, no user, network error, too many attempts, etc.).
 
 
