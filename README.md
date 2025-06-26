@@ -1,83 +1,111 @@
-# CashKeeper
+# Finora: CashKeeper
 
-CashKeeper is a personal finance management Android app that helps users track income, expenses, and manage their finances with a modern UI and Firebase backend integration.
-It features user authentication, income and expense tracking, a dashboard with analytics, and various financial calculators. The app is designed to be user-friendly and visually appealing, with a consistent light theme, custom fonts, and a modern color palette.
+A modern, feature-rich personal finance management app for Android (2025)
 
+---
 
-## Features
-- User registration, login, and logout (with Firebase Authentication)
-- Add, view, and search income and expenses
-- Dashboard with charts and analytics (daily/monthly filters)
-- Profile management and password reset
-- Income tax and EMI calculator
-- Feedback and About sections
-- Fast search for transactions
-- Modern splash screen with custom font (Montserrat, Roboto)
-- Detailed error messages for login failures (invalid email, wrong password, network issues, etc.)
-- Consistent color palette and custom fonts for all screens
-- Secure password reset via email
-- Profile image upload
-- Export data as CSV
-- Responsive design for different screen sizes
+Finora (formerly CashKeeper) helps users track income, expenses, and financial trends with powerful analytics, a beautiful UI, and seamless Firebase integration.
 
-## Tech Stack
-- Java (Android)
-- Firebase Authentication, Realtime Database, Storage
-- MPAndroidChart for charts
-- Material Components for UI
-- Glide for image loading
+## 🚀 Features
+- **User Authentication:** Secure login, registration, and password reset (Firebase Auth)
+- **Income & Expense Tracking:** Add, edit, view, and search transactions
+- **Advanced Analytics:**
+  - Pie chart for category breakdown
+  - Line charts for spending and income trends
+  - Combined income vs expense analytics
+  - Filter by month, year, or custom date range
+- **Dashboard:** Daily/monthly toggle for expense chart
+- **Profile Management:** View/update profile, upload image
+- **Calculators:** Income Tax and EMI calculators
+- **Export:** Export all data as CSV
+- **Modern UI:** Material Components, custom fonts (Montserrat, Roboto), responsive layouts
+- **Navigation:** Bottom navigation bar and navigation drawer
+- **Feedback & About:** Built-in feedback form and about page
+- **Robust Error Handling:** Detailed error messages for all auth and network failures
+- **Firebase-First:** All data stored securely in Firebase Realtime Database and Storage
 
+## 📱 Screenshots
+*Coming soon: add screenshots of Dashboard, Analytics, Profile, and Calculators*
 
-## Setup Instructions
+## 🗂️ Project Structure
+- `app/src/main/java/com/example/genz/` — Main app code
+  - `DashboardFragment.java` — Dashboard with daily/monthly expense chart
+  - `AnalyticsFragment.java` — Advanced analytics (income, expense, combined charts)
+  - `ExpenseFragment.java` & `IncomeFragment.java` — CRUD for transactions
+  - `Model/Data.java` — Transaction data model
+  - `emi.java` — EMI calculator
+  - `first_home_page.java` — Main activity with navigation
+  - ...and more (profile, feedback, etc.)
+- `app/src/main/res/layout/` — UI layouts (XML)
+- `app/src/main/res/values/` — Colors, strings, arrays, styles
+- `app/src/main/res/drawable/` — Icons and vector assets
+
+## 🔗 Firebase Data Structure
+- **Authentication:** Email/password
+- **Database:**
+  - `/ExpenseData/{uid}/` — All expense entries for user
+  - `/IncomeData/{uid}/` — All income entries for user
+  - Each entry: `{ amount, type, note, id, date }`
+- **Storage:**
+  - `/ProfileImages/{uid}/` — Profile images
+
+## 📊 Analytics & Dashboard
+- **Dashboard:**
+  - Bar chart of expenses (toggle daily/monthly)
+  - Quick summary of income, expense, and balance
+- **Analytics Page:**
+  - Pie chart: Expense by category
+  - Line chart: Expense trend
+  - Line chart: Income trend
+  - Combined chart: Income vs Expense
+  - Filter: All time, this month, this year, custom range
+
+## 🛠️ Setup & Usage
 1. **Clone the repository:**
    ```sh
    git clone https://github.com/Chirag-S-Kotian/Finora.git
    cd genz
    ```
+2. **Open in Android Studio** (latest recommended)
+3. **Add Firebase:**
+   - Download `google-services.json` from your Firebase Console
+   - Place it in `app/`
+   - Enable Auth, Realtime Database, and Storage in your Firebase project
+   - Add dependencies in `build.gradle`:
+     ```groovy
+     implementation 'com.google.firebase:firebase-auth:21.0.1'
+     implementation 'com.google.firebase:firebase-database:20.0.3'
+     implementation 'com.google.firebase:firebase-storage:20.0.0'
+     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+     ```
+   - Apply Google Services plugin at the bottom:
+     ```groovy
+     apply plugin: 'com.google.gms.google-services'
+     ```
+4. **Fonts/Colors:**
+   - Uses downloadable fonts (no setup needed)
+   - Colors in `res/values/colors.xml`
+5. **Build & Run:** Sync Gradle, build, and run on device/emulator
+6. **Sign in or register to use all features**
 
-2. **Open in Android Studio.**
-    - Ensure you have the latest version of Android Studio installed.
-    - Open the project by selecting the `genz` directory.
-    - Make sure you have the Android SDK and necessary components installed (Android 12 or higher recommended).
-    
-3. **Configure Firebase:**
-   - Download your `google-services.json` from Firebase Console and place it in `app/`.
-   - Ensure your Firebase project has Authentication (Email/Password), Realtime Database, and Storage enabled.
-    - Add the necessary dependencies in `build.gradle` files:
-      ```groovy
-      // Project-level build.gradle
-      buildscript {
-            dependencies {
-                 classpath 'com.google.gms:google-services:4.3.10' // Check for latest version
-            }
-      }
-    
-      // App-level build.gradle
-      dependencies {
-            implementation 'com.google.firebase:firebase-auth:21.0.1' // Check for latest version
-            implementation 'com.google.firebase:firebase-database:20.0.3' // Check for latest version
-            implementation 'com.google.firebase:firebase-storage:20.0.0' // Check for latest version
-            implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0' // Check for latest version
-      }
-      apply plugin: 'com.google.gms.google-services'
-      ```
-        - Ensure you have the Google Services plugin applied at the bottom of your `app/build.gradle` file:
-        ```groovy
-        apply plugin: 'com.google.gms.google-services'
-        ```
-        - Sync your project with Gradle files.
-    
-4. **Fonts and Colors:**
-   - The app uses downloadable fonts (Montserrat, Roboto). No manual font file setup is required.
-   - The color palette is defined in `res/values/colors.xml` and enforced throughout the app.
+## 🧑‍💻 Contributing
+- Fork this repo and submit pull requests!
+- Please open issues for bugs or feature requests.
+- Follow best practices for Java/Android and Firebase security.
 
-5. **Build the project:**
-   - Sync Gradle and build the app.
-6. **Run on an emulator or device.**
-7. **Sign in with your Firebase account to test the app.**
+## ⚠️ Troubleshooting
+- If you see resource or R class errors, try `Build > Clean Project` and `Sync Project with Gradle Files` in Android Studio.
+- Make sure `google-services.json` is in the correct location.
+- Check Firebase rules for database and storage access.
+- If charts don’t show, ensure MPAndroidChart is in your dependencies.
 
-## API Details
-### Authentication
+## 📄 License
+MIT License (see LICENSE file)
+
+---
+
+© 2025 Chirag S Kotian. Finora is open-source and community-driven.
+
 - **Register:**
   - Endpoint: Firebase Auth (Email/Password)
   - Fields: Email, Password
