@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Filter Controls -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingBottom="12dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Filter: "
+                android:textStyle="bold"/>
+            <Spinner
+                android:id="@+id/spinner_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:entries="@array/analytics_filters"
+                android:layout_marginStart="8dp"/>
+            <Button
+                android:id="@+id/btn_start_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Start Date"
+                android:visibility="gone"
+                android:layout_marginStart="8dp"/>
+            <Button
+                android:id="@+id/btn_end_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="End Date"
+                android:visibility="gone"
+                android:layout_marginStart="8dp"/>
+        </LinearLayout>
+        <TextView
+            android:id="@+id/analytics_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Analytics Overview"
+            android:textAppearance="?android:textAppearanceLarge"
+            android:textStyle="bold"
+            android:layout_gravity="center_horizontal"
+            android:paddingBottom="12dp"/>
+
+        <!-- Expense Pie Chart -->
+        <com.github.mikephil.charting.charts.PieChart
+            android:id="@+id/pie_chart"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_marginBottom="24dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Spending Trend"
+            android:textStyle="bold"
+            android:paddingBottom="8dp"/>
+
+        <!-- Expense Trend Chart -->
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/line_chart"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"/>
+
+        <!-- Income Trend Chart -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Income Trend"
+            android:textStyle="bold"
+            android:paddingTop="16dp"
+            android:paddingBottom="8dp"/>
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/income_line_chart"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"/>
+
+        <!-- Combined Chart -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Income vs Expense"
+            android:textStyle="bold"
+            android:paddingTop="16dp"
+            android:paddingBottom="8dp"/>
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/combined_line_chart"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"/>
+    </LinearLayout>
+</ScrollView>
