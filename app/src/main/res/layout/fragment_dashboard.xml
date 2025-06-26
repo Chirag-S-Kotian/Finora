@@ -216,14 +216,16 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Daily"
-                        android:checked="true"/>
+                        android:checked="true"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"/>
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chip_monthly"
                         style="@style/Widget.MaterialComponents.Chip.Choice"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Monthly"/>
+                        android:text="Monthly"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"/>
                 </com.google.android.material.chip.ChipGroup>
 
                 <!-- Existing chart -->
