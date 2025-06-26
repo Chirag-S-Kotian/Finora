@@ -50,12 +50,12 @@
         android:icon="@drawable/ic_about">
 
     </item>
+    <item android:id="@+id/analytics"
+        android:title="Analytics"
+        android:icon="@drawable/ic_analytics">
+    </item>
     <item android:id="@+id/logout"
         android:title="Logout"
         android:icon="@drawable/ic_logout">
-
     </item>
-    <item android:id="@+id/analytics"
-        android:title="Analytics"
-        android:icon="@drawable/ic_analytics"/>
 </menu>
