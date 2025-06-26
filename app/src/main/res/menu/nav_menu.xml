@@ -55,4 +55,7 @@
         android:icon="@drawable/ic_logout">
 
     </item>
+    <item android:id="@+id/analytics"
+        android:title="Analytics"
+        android:icon="@drawable/ic_analytics"/>
 </menu>
