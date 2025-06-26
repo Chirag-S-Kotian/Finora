@@ -189,7 +189,6 @@ MIT License (see LICENSE file)
 - Dashboard analytics are generated using data from the Realtime Database
 
 
-
 ## Usage
 - Register or login to your account
 - Add income/expense entries
