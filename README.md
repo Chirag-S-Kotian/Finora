@@ -187,7 +187,9 @@ MIT License (see LICENSE file)
 
 ### Analytics
 - Dashboard analytics are generated using data from the Realtime Database
+
 # Finora: CashKeeper
+A modern personal finance management app for Android, built with Firebase and MPAndroidChart.
 
 ## Usage
 - Register or login to your account
