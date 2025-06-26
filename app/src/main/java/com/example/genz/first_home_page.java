@@ -1,5 +1,7 @@
 package com.example.finora;
 
+import com.example.finora.AnalyticsFragment;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -47,12 +49,14 @@ public class first_home_page extends AppCompatActivity implements NavigationView
     private DashboardFragment dashboardFragment;
     private IncomeFragment incomeFragment;
     private ExpenseFragment expenseFragment;
+    private AnalyticsFragment analyticsFragment;
 
     private FirebaseAuth mAuth;
 
     ArrayList<HashMap<String,Object>> items;
     PackageManager pm ;
     List<PackageInfo> packs;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +84,7 @@ public class first_home_page extends AppCompatActivity implements NavigationView
         dashboardFragment=new DashboardFragment();
         incomeFragment=new IncomeFragment();
         expenseFragment=new ExpenseFragment();
+        analyticsFragment=new AnalyticsFragment();
         setFragment(dashboardFragment);
 
 
@@ -140,6 +145,11 @@ public class first_home_page extends AppCompatActivity implements NavigationView
                         bottomNavigationView.setItemBackgroundResource(R.color.expense_color);
                         return true;
 
+                    case R.id.analytics:
+                        setFragment(analyticsFragment);
+                        bottomNavigationView.setItemBackgroundResource(R.color.dashboard_color);
+                        return true;
+
                     default:
                         return false;
 
@@ -182,6 +192,9 @@ public class first_home_page extends AppCompatActivity implements NavigationView
     public void displaySelectedListener(int itemId){
         Fragment fragment=null;
         switch(itemId){
+            case R.id.analytics:
+                fragment = new AnalyticsFragment();
+                break;
             case R.id.profile:
                 Intent profile_intent=new Intent(getApplicationContext(),Profile.class);
                 startActivity(profile_intent);
