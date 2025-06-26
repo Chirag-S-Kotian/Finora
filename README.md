@@ -187,7 +187,7 @@ MIT License (see LICENSE file)
 
 ### Analytics
 - Dashboard analytics are generated using data from the Realtime Database
-
+# Finora: CashKeeper
 
 ## Usage
 - Register or login to your account
