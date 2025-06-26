@@ -1,3 +1,18 @@
+<!-- Badges -->
+<p align="center">
+  <a href="#"><img src="https://img.shields.io/badge/build-passing-brightgreen" alt="Build Status"></a>
+  <a href="#"><img src="https://img.shields.io/badge/platform-Android-blue" alt="Platform"></a>
+  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-lightgrey" alt="License"></a>
+  <a href="https://firebase.google.com/"><img src="https://img.shields.io/badge/Firebase-integrated-yellow" alt="Firebase"></a>
+  <a href="https://github.com/PhilJay/MPAndroidChart"><img src="https://img.shields.io/badge/Charts-MPAndroidChart-orange" alt="MPAndroidChart"></a>
+  <a href="https://developer.android.com/studio"><img src="https://img.shields.io/badge/IDE-Android%20Studio-green" alt="Android Studio"></a>
+  <a href="#"><img src="https://img.shields.io/badge/Open%20Source-Yes-success" alt="Open Source"></a>
+</p>
+<p align="center">
+  <!-- Play Store badge placeholder -->
+  <a href="#"><img src="https://img.shields.io/badge/Coming%20Soon-Google%20Play-black?logo=google-play" alt="Google Play"></a>
+</p>
+
 # Finora: CashKeeper
 
 A modern, feature-rich personal finance management app for Android (2025)
