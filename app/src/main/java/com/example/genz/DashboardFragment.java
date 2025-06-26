@@ -42,6 +42,7 @@ import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.chip.Chip;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -53,20 +54,25 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.Collections;
 
 public class DashboardFragment extends Fragment {
 
     BarChart barChart;
     BarData barData;
     BarDataSet barDataSet;
-    ArrayList barEntries;
-    ArrayList<String> date = new ArrayList<>();
+    ArrayList<BarEntry> barEntries;
+    ArrayList<String> dateLabels = new ArrayList<>();
+    boolean isMonthlyView = false; // Track current chart mode
 
     private FloatingActionButton fab_main;
     private FloatingActionButton fab_income_btn;
     private FloatingActionButton fab_expense_btn;
-
 
     private TextView fab_income_txt;
     private TextView fab_expense_txt;
@@ -136,32 +142,26 @@ public class DashboardFragment extends Fragment {
 
 
         barChart=myview.findViewById(R.id.bar_chart);
-        ValueEventListener event2=new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                getBarEntries(snapshot);
-                barDataSet=new BarDataSet(barEntries,"Expenses");
-                barData=new BarData(barDataSet);
-                barChart.setData(barData);
-                barChart.getDescription().setText("Expenses Per Day");
-                XAxis xval=barChart.getXAxis();
-                xval.setDrawLabels(true);
-                barChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(date));
-                barDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
-                barDataSet.setValueTextColor(Color.BLACK);
-                barDataSet.setValueTextSize(16f);
-                barDataSet.notifyDataSetChanged();
-                barChart.notifyDataSetChanged();
-                barChart.invalidate();
+
+        // Setup chart filter chips
+        Chip chipDaily = myview.findViewById(R.id.chip_daily);
+        Chip chipMonthly = myview.findViewById(R.id.chip_monthly);
+
+        chipDaily.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                isMonthlyView = false;
+                loadAndDisplayChart();
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
+        });
+        chipMonthly.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                isMonthlyView = true;
+                loadAndDisplayChart();
             }
-        };
-        mExpenseDatabase.addListenerForSingleValueEvent(event2);
+        });
 
+        // Initial chart load
+        loadAndDisplayChart();
 
         fab_main.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -573,24 +573,85 @@ public class DashboardFragment extends Fragment {
         }
     }
 
-    private void getBarEntries(DataSnapshot snap)
-    {
-
-        Log.d("ExpenseData","Reading Data");
-
-        barEntries=new ArrayList();
-        date = new ArrayList<>();
-        float a=1f;
-        if(snap.exists()) {
+    private void getBarEntries(DataSnapshot snap) {
+        barEntries = new ArrayList<>();
+        dateLabels = new ArrayList<>();
+        Map<String, Float> grouped = new HashMap<>();
+        SimpleDateFormat inputFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
+        SimpleDateFormat dayFormat = new SimpleDateFormat("MMM dd", Locale.getDefault());
+        SimpleDateFormat monthFormat = new SimpleDateFormat("MMM yyyy", Locale.getDefault());
+        if (snap.exists()) {
             for (DataSnapshot ds : snap.getChildren()) {
                 Data data = ds.getValue(Data.class);
-                date.add(data.getDate().substring(0,7));
-
-                float amm = data.getAmount();
-                barEntries.add(new BarEntry(a,amm));
-
-                a=a+1;
+                if (data == null) continue;
+                String rawDate = data.getDate();
+                String key = "";
+                try {
+                    Date dateObj = inputFormat.parse(rawDate);
+                    key = isMonthlyView ? monthFormat.format(dateObj) : dayFormat.format(dateObj);
+                } catch (Exception e) {
+                    key = rawDate;
+                }
+                float amount = data.getAmount();
+                grouped.put(key, grouped.getOrDefault(key, 0f) + amount);
+            }
+            // Sort dates chronologically
+            List<String> sortedKeys = new ArrayList<>(grouped.keySet());
+            Collections.sort(sortedKeys, (d1, d2) -> {
+                try {
+                    SimpleDateFormat fmt = isMonthlyView ? monthFormat : dayFormat;
+                    return fmt.parse(d1).compareTo(fmt.parse(d2));
+                } catch (Exception e) { return d1.compareTo(d2); }
+            });
+            int idx = 0;
+            for (String label : sortedKeys) {
+                barEntries.add(new BarEntry(idx, grouped.get(label)));
+                dateLabels.add(label);
+                idx++;
             }
         }
+    }
+
+    private void loadAndDisplayChart() {
+        mExpenseDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                getBarEntries(snapshot);
+                barDataSet = new BarDataSet(barEntries, isMonthlyView ? "Monthly Expenses" : "Daily Expenses");
+                barDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+                barDataSet.setValueTextColor(Color.BLACK);
+                barDataSet.setValueTextSize(14f);
+                barDataSet.setValueFormatter(new ValueFormatter() {
+                    @Override
+                    public String getFormattedValue(float value) {
+                        return "₹" + ((int)value);
+                    }
+                });
+                barData = new BarData(barDataSet);
+                barChart.setData(barData);
+                barChart.getDescription().setText(isMonthlyView ? "Expenses Per Month" : "Expenses Per Day");
+                barChart.getDescription().setTextColor(Color.DKGRAY);
+                barChart.getDescription().setTextSize(13f);
+                XAxis xAxis = barChart.getXAxis();
+                xAxis.setDrawLabels(true);
+                xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+                xAxis.setGranularity(1f);
+                xAxis.setTextColor(Color.DKGRAY);
+                xAxis.setTextSize(12f);
+                xAxis.setValueFormatter(new IndexAxisValueFormatter(dateLabels));
+                xAxis.setLabelRotationAngle(-30f);
+                xAxis.setDrawGridLines(false);
+                barChart.getAxisLeft().setTextColor(Color.DKGRAY);
+                barChart.getAxisLeft().setTextSize(12f);
+                barChart.getAxisLeft().setDrawGridLines(true);
+                barChart.getAxisRight().setEnabled(false);
+                barChart.setExtraBottomOffset(16f);
+                barChart.getLegend().setEnabled(false);
+                barChart.animateY(900);
+                barChart.invalidate();
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+        });
     }
 }
