@@ -222,19 +222,16 @@ public class first_home_page extends AppCompatActivity implements NavigationView
                 startActivity(intent_exp);
                 break;
 
-            case R.id.income_tax_emi:
-                Intent intent3=new Intent(getApplicationContext(),inc_emi.class);
-                startActivity(intent3);
-                break;
 
-            case R.id.calculator:
+
+// EMI and Calculator cases removed
                 int d=0;
                 if(items.size()>=1)
                 {
                     int j=0;
                     for(j=0;j<items.size();j++){
                         String AppName = (String) items.get(j).get("appName");
-                        if(AppName.matches("Calculator"))
+// Calculator logic removed
                         {
                             d=j;
                             break;
@@ -245,20 +242,20 @@ public class first_home_page extends AppCompatActivity implements NavigationView
                     Intent i = pm.getLaunchIntentForPackage(packageName);
                     if (i != null)
                     {
-                        Toast.makeText(getApplicationContext(),"Opening Calculator..",Toast.LENGTH_SHORT).show();
+// Calculator Toast removed
                         startActivity(i);
                     }
                     else
                     {
                         Intent intent=new Intent(Intent.ACTION_VIEW);
-                        intent.setData(Uri.parse("https://play.google.com/store/apps/details?id=com.sec.android.app.popupcalculator"));
+// Calculator Play Store intent removed
                         startActivity(intent);
                     }
                 }
                 else
                 {
                     Intent intent1=new Intent(Intent.ACTION_VIEW);
-                    intent1.setData(Uri.parse("https://play.google.com/store/apps/details?id=com.sec.android.app.popupcalculator"));
+// Calculator Play Store intent removed
                     startActivity(intent1);
                 }
                 break;
