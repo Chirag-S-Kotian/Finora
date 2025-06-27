@@ -37,6 +37,7 @@ built with Firebase and MPAndroidChart. Finora CashKeeper helps users track inco
 - **Robust Error Handling:** Detailed error messages for all auth and network failures
 - **Firebase-First:** All data stored securely in Firebase Realtime Database and Storage
 
+
 ## 📱 Screenshots
 *Coming soon: add screenshots of Dashboard, Analytics, Profile, and Calculators*
 
