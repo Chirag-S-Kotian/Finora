@@ -224,41 +224,7 @@ public class first_home_page extends AppCompatActivity implements NavigationView
 
 
 
-// EMI and Calculator cases removed
-                int d=0;
-                if(items.size()>=1)
-                {
-                    int j=0;
-                    for(j=0;j<items.size();j++){
-                        String AppName = (String) items.get(j).get("appName");
-// Calculator logic removed
-                        {
-                            d=j;
-                            break;
-                        }
-                    }
-                    String packageName = (String) items.get(d).get("packageName");
 
-                    Intent i = pm.getLaunchIntentForPackage(packageName);
-                    if (i != null)
-                    {
-// Calculator Toast removed
-                        startActivity(i);
-                    }
-                    else
-                    {
-                        Intent intent=new Intent(Intent.ACTION_VIEW);
-// Calculator Play Store intent removed
-                        startActivity(intent);
-                    }
-                }
-                else
-                {
-                    Intent intent1=new Intent(Intent.ACTION_VIEW);
-// Calculator Play Store intent removed
-                    startActivity(intent1);
-                }
-                break;
 
             case R.id.feedback:
                 Intent intent2=new Intent(getApplicationContext(),feedback.class);
