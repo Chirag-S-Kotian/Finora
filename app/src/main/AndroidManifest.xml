@@ -10,10 +10,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
         <activity android:name=".NextIncome"></activity>
-        <activity android:name=".emi" />
+
         <activity android:name=".income2" />
         <activity android:name=".Finalinc" />
-        <activity android:name=".inc_emi" />
+
         <activity android:name=".searchdata2" />
         <activity android:name=".searchdata" />
         <activity android:name=".change_password" />
