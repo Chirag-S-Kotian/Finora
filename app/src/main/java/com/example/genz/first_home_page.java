@@ -64,7 +64,7 @@ public class first_home_page extends AppCompatActivity implements NavigationView
         setContentView(R.layout.activity_first_home_page);
 
         Toolbar toolbar=findViewById(R.id.my_toolbar);
-        toolbar.setTitle("Finora");
+        toolbar.setTitle("cashKeeper");
         toolbar.setTitleTextColor(Color.BLACK);
 
         setSupportActionBar(toolbar);
