@@ -19,7 +19,7 @@ A modern, feature-rich personal finance management app for Android (2025)
 built with Firebase and MPAndroidChart. Finora (formerly CashKeeper) helps users track income, expenses, and financial trends with powerful analytics, a beautiful UI, and seamless Firebase integration.
 ---
 
-Finora (formerly CashKeeper) helps users track income, expenses, and financial trends with powerful analytics, a beautiful UI, and seamless Firebase integration.
+Finora formerly CashKeeperhelps users track income, expenses, and financial trends with powerful analytics, a beautiful UI, and seamless Firebase integration.
 
 ## 🚀 Features
 - **User Authentication:** Secure login, registration, and password reset (Firebase Auth)
