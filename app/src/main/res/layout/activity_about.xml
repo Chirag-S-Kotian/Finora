@@ -58,7 +58,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Finora Team"
+                android:text="cashKeeper Team"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 android:textColor="@color/toolbar_color"
