@@ -23,23 +23,27 @@ built with Firebase and MPAndroidChart. Finora CashKeeper helps users track inco
 - **User Authentication:** Secure login, registration, and password reset (Firebase Auth)
 - **Income & Expense Tracking:** Add, edit, view, and search transactions
 - **Advanced Analytics:**
-  - Pie chart for category breakdown
-  - Line charts for spending and income trends
-  - Combined income vs expense analytics
-  - Filter by month, year, or custom date range
-- **Dashboard:** Daily/monthly toggle for expense chart
-- **Profile Management:** View/update profile, upload image
-- **Calculators:** Income Tax and EMI calculators
-- **Export:** Export all data as CSV
-- **Modern UI:** Material Components, custom fonts (Montserrat, Roboto), responsive layouts
-- **Navigation:** Bottom navigation bar and navigation drawer
-- **Feedback & About:** Built-in feedback form and about page
-- **Robust Error Handling:** Detailed error messages for all auth and network failures
-- **Firebase-First:** All data stored securely in Firebase Realtime Database and Storage
-
+  - Pie chart for category breakdown 📈
+  - Line charts for spending and income trends 📊
+  - Combined income vs expense analytics 📊
+  - Filter by month, year, or custom date range 📆
+- **Dashboard:** Daily/monthly toggle for expense chart 📊
+- **Profile Management:** View/update profile, upload image 👥
+- **Export:** Export all data as CSV 📁
+- **Modern UI:** Material Components, custom fonts (Montserrat, Roboto), responsive layouts 📈
+- **Navigation:** Bottom navigation bar and navigation drawer 📈
+- **Feedback & About:** Built-in feedback form and about page 📝
+- **Robust Error Handling:** Detailed error messages for all auth and network failures 🚨
+- **Firebase-First:** All data stored securely in Firebase Realtime Database and Storage 🔒
 
 ## 📱 Screenshots
-*Coming soon: add screenshots of Dashboard, Analytics, Profile, and Calculators*
+*Coming soon: add screenshots of Dashboard, Analytics, and Profile*
+ 
+**Screenshot Checklist:**
+- [ ] Dashboard with charts and summary
+- [ ] Analytics page with combined and trend charts
+- [ ] Profile page
+- [ ] Feedback/About page
 
 ## 🗂️ Project Structure
 - `app/src/main/java/com/example/genz/` — Main app code
@@ -47,7 +51,6 @@ built with Firebase and MPAndroidChart. Finora CashKeeper helps users track inco
   - `AnalyticsFragment.java` — Advanced analytics (income, expense, combined charts)
   - `ExpenseFragment.java` & `IncomeFragment.java` — CRUD for transactions
   - `Model/Data.java` — Transaction data model
-  - `emi.java` — EMI calculator
   - `first_home_page.java` — Main activity with navigation
   - ...and more (profile, feedback, etc.)
 - `app/src/main/res/layout/` — UI layouts (XML)
