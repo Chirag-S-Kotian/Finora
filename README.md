@@ -209,7 +209,6 @@ MIT License (see LICENSE file)
 }
 ```
 
-
 ### Profile Management
 - User profile data is stored under `/UserProfile/{uid}/`
 - Contains fields like name, email, profile image URL, etc.
