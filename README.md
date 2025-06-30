@@ -80,6 +80,7 @@ app/src/main/res/layout/
 ├── profile_toolbar.xml, about_toolbar.xml, ...
 └── ... (other layouts)
 
+
 app/src/main/res/menu/
 ├── bottommenu.xml                  # Bottom navigation menu
 ├── nav_menu.xml                    # Navigation drawer menu
@@ -122,7 +123,7 @@ app/src/main/res/menu/
      ```groovy
      apply plugin: 'com.google.gms.google-services'
      ```
-     
+
 4. **Fonts/Colors:**
    - Uses downloadable fonts (no setup needed)
    - Colors in `res/values/colors.xml`
