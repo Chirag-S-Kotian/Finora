@@ -94,7 +94,46 @@ public class ExpenseFragment extends Fragment {
         });
 
 
+        // Add Expense FAB
+        View fab = myview.findViewById(R.id.fab_add_expense);
+        if (fab != null) {
+            fab.setOnClickListener(v -> showAddExpenseDialog());
+        }
         return  myview;
+    }
+
+    private void showAddExpenseDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = LayoutInflater.from(getActivity());
+        View dialogView = inflater.inflate(R.layout.update_data_item, null);
+        builder.setView(dialogView);
+
+        EditText edtAmount = dialogView.findViewById(R.id.amount_edt);
+        EditText edtType = dialogView.findViewById(R.id.type_edt);
+        EditText edtNote = dialogView.findViewById(R.id.note_edt);
+        Button btnUpdate = dialogView.findViewById(R.id.btn_upd_Update);
+        Button btnDelete = dialogView.findViewById(R.id.btnuPD_Delete);
+        btnDelete.setVisibility(View.GONE); // Hide delete button for add
+        btnUpdate.setText("Add");
+
+        AlertDialog dialog = builder.create();
+        btnUpdate.setOnClickListener(v -> {
+            String amountStr = edtAmount.getText().toString().trim();
+            String typeStr = edtType.getText().toString().trim();
+            String noteStr = edtNote.getText().toString().trim();
+            if (amountStr.isEmpty() || typeStr.isEmpty()) {
+                if (edtAmount.getText().toString().trim().isEmpty()) edtAmount.setError("Required");
+                if (edtType.getText().toString().trim().isEmpty()) edtType.setError("Required");
+                return;
+            }
+            int amount = Integer.parseInt(amountStr);
+            String id = mExpenseDatabase.push().getKey();
+            String date = java.text.DateFormat.getDateInstance().format(new java.util.Date());
+            Data data = new Data(amount, typeStr, noteStr, id, date);
+            mExpenseDatabase.child(id).setValue(data);
+            dialog.dismiss();
+        });
+        dialog.show();
     }
 
     @Override
