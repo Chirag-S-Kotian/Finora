@@ -23,13 +23,13 @@
   <img src="https://img.shields.io/badge/Open%20Source-Yes-success" alt="Open Source">
 </p>
 
-<h1 align="center">Finora: CashKeeper</h1>
+<h1 align="center">CashKeeper</h1>
 <p align="center"><b>Modern Personal Finance Manager for Android</b></p>
 
 ---
 
 ## 🌟 Overview
-Finora (CashKeeper) is a modern, feature-rich personal finance management app for Android. Track your income, expenses, and analyze your financial trends with a beautiful UI and real-time Firebase integration. Built for speed, clarity, and privacy.
+CashKeeper is a modern, feature-rich personal finance management app for Android. Track your income, expenses, and analyze your financial trends with a beautiful UI and real-time Firebase integration. Built for speed, clarity, and privacy.
 ---
 
 ## 🚀 Features
@@ -103,7 +103,7 @@ app/src/main/res/menu/
 ## ⚡ Setup & Usage
 1. **Clone the repository:**
    ```sh
-   git clone https://github.com/Chirag-S-Kotian/Finora.git
+   git clone https://github.com/Chirag-S-Kotian/CashKeeper.git
    cd genz
    ```
 2. **Open in Android Studio** (latest recommended)
@@ -153,7 +153,7 @@ MIT License (see LICENSE file)
 
 ---
 
-© 2025 Chirag S Kotian. Finora is open-source and community-driven.
+© 2025 Chirag S Kotian. CashKeeper is open-source and community-driven.
 
 - **Register:**
   - Endpoint: Firebase Auth (Email/Password)
@@ -225,7 +225,7 @@ MIT License (see LICENSE file)
 ### Analytics
 - Dashboard analytics are generated using data from the Realtime Database
 
-# Finora: CashKeeper
+# CashKeeper
 A modern personal finance management app for Android, built with Firebase and MPAndroidChart.
 
 
