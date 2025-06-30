@@ -133,6 +133,7 @@ app/src/main/res/menu/
 - Please open issues for bugs or feature requests.
 - Follow best practices for Java/Android and Firebase security.
 
+
 ## ⚠️ Troubleshooting
 - If you see resource or R class errors, try `Build > Clean Project` and `Sync Project with Gradle Files` in Android Studio.
 - Make sure `google-services.json` is in the correct location.
