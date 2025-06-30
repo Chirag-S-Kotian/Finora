@@ -13,70 +13,94 @@
   <a href="#"><img src="https://img.shields.io/badge/Coming%20Soon-Google%20Play-black?logo=google-play" alt="Google Play"></a>
 </p>
 
-# Finora: CashKeeper
-A modern, feature-rich personal finance management app for Android (2025)
-built with Firebase and MPAndroidChart. Finora CashKeeper helps users track income, expenses, and financial trends with powerful analytics, a beautiful UI, and seamless Firebase integration.
+<p align="center">
+  <img src="https://img.shields.io/badge/build-passing-brightgreen" alt="Build Status">
+  <img src="https://img.shields.io/badge/platform-Android-blue" alt="Platform">
+  <img src="https://img.shields.io/badge/license-MIT-lightgrey" alt="License">
+  <img src="https://img.shields.io/badge/Firebase-integrated-yellow" alt="Firebase">
+  <img src="https://img.shields.io/badge/Charts-MPAndroidChart-orange" alt="MPAndroidChart">
+  <img src="https://img.shields.io/badge/IDE-Android%20Studio-green" alt="Android Studio">
+  <img src="https://img.shields.io/badge/Open%20Source-Yes-success" alt="Open Source">
+</p>
+
+<h1 align="center">Finora: CashKeeper</h1>
+<p align="center"><b>Modern Personal Finance Manager for Android</b></p>
+
+---
+
+## 🌟 Overview
+Finora (CashKeeper) is a modern, feature-rich personal finance management app for Android. Track your income, expenses, and analyze your financial trends with a beautiful UI and real-time Firebase integration. Built for speed, clarity, and privacy.
 ---
 
 ## 🚀 Features
 - **User Authentication:** Secure login, registration, and password reset (Firebase Auth)
 - **Income & Expense Tracking:** Add, edit, view, and search transactions
 - **Advanced Analytics:**
-  - Pie chart for category breakdown 📈
-  - Line charts for spending and income trends 📊
-  - Combined income vs expense analytics 📊
+  - Bar charts for income and expenses (real-time, filterable)
   - Filter by month, year, or custom date range 📆
-- **Dashboard:** Daily/monthly toggle for expense chart 📊
-- **Profile Management:** View/update profile, upload image 👥
+- **Dashboard:** Daily/monthly expense summaries
+- **Profile Management:** View & update profile, upload image 👥
 - **Export:** Export all data as CSV 📁
-- **Modern UI:** Material Components, custom fonts (Montserrat, Roboto), responsive layouts 📈
-- **Navigation:** Bottom navigation bar and navigation drawer 📈
-- **Feedback & About:** Built-in feedback form and about page 📝
+- **Modern UI:** Material Components, custom fonts (Montserrat, Roboto), responsive layouts
+- **Navigation:** Bottom navigation bar and navigation drawer
 - **Robust Error Handling:** Detailed error messages for all auth and network failures 🚨
 - **Firebase-First:** All data stored securely in Firebase Realtime Database and Storage 🔒
 
-## 📱 Screenshots
-*Coming soon: add screenshots of Dashboard, Analytics, and Profile*
- 
-**Screenshot Checklist:**
-- [ ] Dashboard with charts and summary
-- [ ] Analytics page with combined and trend charts
-- [ ] Profile page
-- [ ] Feedback/About page
+## 📷 Screenshots
+<!-- Add screenshots here -->
+- Dashboard
+- Analytics
+- Add/Edit Expense
+- Profile
+- About
 
 ## 🗂️ Project Structure
-- `app/src/main/java/com/example/genz/` — Main app code
-  - `DashboardFragment.java` — Dashboard with daily/monthly expense chart
-  - `AnalyticsFragment.java` — Advanced analytics (income, expense, combined charts)
-  - `ExpenseFragment.java` & `IncomeFragment.java` — CRUD for transactions
-  - `Model/Data.java` — Transaction data model
-  - `first_home_page.java` — Main activity with navigation
-  - ...and more (profile, feedback, etc.)
-- `app/src/main/res/layout/` — UI layouts (XML)
-- `app/src/main/res/values/` — Colors, strings, arrays, styles
-- `app/src/main/res/drawable/` — Icons and vector assets
+```
+app/src/main/java/com/example/genz/
+├── AnalyticsFragment.java      # Analytics page, income/expense bar charts
+├── DashboardFragment.java      # Dashboard with expense summaries
+├── ExpenseFragment.java        # Add/view/edit/delete expenses
+├── IncomeFragment.java         # Add/view/edit/delete income
+├── Profile.java                # User profile page
+├── Registration.java           # User registration
+├── MainActivity.java           # App entry, navigation
+├── about.java                  # About page
+├── change_password.java        # Change password screen
+├── first_home_page.java        # Main navigation activity
+├── home_screen.java            # Home page
+├── Model/Data.java             # Transaction data model
+└── ... (other utility/activity files)
+
+app/src/main/res/layout/
+├── activity_about.xml              # About page layout
+├── fragment_analytics.xml          # Analytics screen layout
+├── fragment_dashboard.xml          # Dashboard layout
+├── fragment_expense.xml            # Expenses page layout
+├── fragment_income.xml             # Income page layout
+├── profile_toolbar.xml, about_toolbar.xml, ...
+└── ... (other layouts)
+
+app/src/main/res/menu/
+├── bottommenu.xml                  # Bottom navigation menu
+├── nav_menu.xml                    # Navigation drawer menu
+└── ...
+```
 
 ## 🔗 Firebase Data Structure
-- **Authentication:** Email/password
-- **Database:**
-  - `/ExpenseData/{uid}/` — All expense entries for user
-  - `/IncomeData/{uid}/` — All income entries for user
-  - Each entry: `{ amount, type, note, id, date }`
-- **Storage:**
-  - `/ProfileImages/{uid}/` — Profile images
+- `/ExpenseData/{uid}/` — All expense entries for user
+- `/IncomeData/{uid}/` — All income entries for user
+- Each entry: `{ amount, type, note, id, date }`
+- `/ProfileImages/{uid}/` — Profile images
 
 ## 📊 Analytics & Dashboard
 - **Dashboard:**
   - Bar chart of expenses (toggle daily/monthly)
   - Quick summary of income, expense, and balance
 - **Analytics Page:**
-  - Pie chart: Expense by category
-  - Line chart: Expense trend
-  - Line chart: Income trend
-  - Combined chart: Income vs Expense
+  - Bar charts: Income and Expense (real-time, filterable)
   - Filter: All time, this month, this year, custom range
 
-## 🛠️ Setup & Usage
+## ⚡ Setup & Usage
 1. **Clone the repository:**
    ```sh
    git clone https://github.com/Chirag-S-Kotian/Finora.git
@@ -114,6 +138,15 @@ built with Firebase and MPAndroidChart. Finora CashKeeper helps users track inco
 - Make sure `google-services.json` is in the correct location.
 - Check Firebase rules for database and storage access.
 - If charts don’t show, ensure MPAndroidChart is in your dependencies.
+
+## 🛠️ Tech Stack
+- **Language:** Java
+- **UI:** Android XML, Material Components, CardView
+- **Charts:** MPAndroidChart (BarChart)
+- **Backend:** Firebase Realtime Database, Firebase Auth, Firebase Storage
+- **IDE:** Android Studio
+
+---
 
 ## 📄 License
 MIT License (see LICENSE file)
