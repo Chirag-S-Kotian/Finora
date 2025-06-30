@@ -170,6 +170,7 @@ MIT License (see LICENSE file)
   - Fields: Email
   - Action: Send password reset email
 
+
 ### Database Structure (Firebase Realtime Database)
 - `/IncomeData/{uid}/` — Stores user income entries
 - `/ExpenseData/{uid}/` — Stores user expense entries
