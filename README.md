@@ -228,26 +228,5 @@ MIT License (see LICENSE file)
 # Finora: CashKeeper
 A modern personal finance management app for Android, built with Firebase and MPAndroidChart.
 
-## Usage
-- Register or login to your account
-- Add income/expense entries
-- View dashboard for analytics (with daily/monthly filters)
-- Search and filter your transactions
-- Access calculators and profile from the navigation menu
-If login fails, detailed error messages will be shown for each scenario (invalid email, wrong password, no user, network error, too many attempts, etc.).
-
-
-## Security
-- Firebase Authentication is used for secure user management
-- Data is stored securely in Firebase Realtime Database
-- Sensitive files like `google-services.json` are excluded from git tracking
-- All user data is stored securely in Firebase
-
-
-## Contributing
-Pull requests are welcome. For major changes, please open an issue first.
-
-
-## License
 
 This project, CashKeeper, is licensed under the [Apache 2.0](LICENSE) license.
