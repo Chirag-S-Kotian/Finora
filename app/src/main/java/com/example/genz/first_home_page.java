@@ -226,10 +226,6 @@ public class first_home_page extends AppCompatActivity implements NavigationView
 
 
 
-            case R.id.feedback:
-                Intent intent2=new Intent(getApplicationContext(),feedback.class);
-                startActivity(intent2);
-                break;
 
             case R.id.about:
                 Intent intent4=new Intent(getApplicationContext(),about.class);
