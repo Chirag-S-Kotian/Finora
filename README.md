@@ -111,7 +111,7 @@ app/src/main/res/menu/
    git clone https://github.com/Chirag-S-Kotian/CashKeeper.git
    cd genz
    ```
-   
+
 2. **Open in Android Studio** (latest recommended)
 3. **Add Firebase:**
    - Download `google-services.json` from your Firebase Console
@@ -128,6 +128,7 @@ app/src/main/res/menu/
      ```groovy
      apply plugin: 'com.google.gms.google-services'
      ```
+
 
 4. **Fonts/Colors:**
    - Uses downloadable fonts (no setup needed)
