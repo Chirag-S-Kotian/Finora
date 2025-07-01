@@ -30,7 +30,6 @@
 ## 🌟 Overview
 CashKeeper is a modern, feature-rich personal finance management app for Android. Track your income, expenses, and analyze your financial trends with a beautiful UI and real-time Firebase integration. Built for speed, clarity, and privacy.
 ---
-
 ## 🚀 Features
 - **User Authentication:** Secure login, registration, and password reset (Firebase Auth)
 - **Income & Expense Tracking:** Add, edit, view, and search transactions
