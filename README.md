@@ -82,7 +82,6 @@ app/src/main/res/layout/
 ├── profile_toolbar.xml, about_toolbar.xml, ...
 └── ... (other layouts)
 
-
 app/src/main/res/menu/
 ├── bottommenu.xml                  # Bottom navigation menu
 ├── nav_menu.xml                    # Navigation drawer menu
