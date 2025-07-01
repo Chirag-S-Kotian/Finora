@@ -155,6 +155,7 @@ app/src/main/res/menu/
 - **Charts:** MPAndroidChart (BarChart)
 - **Backend:** Firebase Realtime Database, Firebase Auth, Firebase Storage
 - **IDE:** Android Studio Chipmunk 2021.2.1
+- **Fonts:** Montserrat, Roboto (downloadable fonts)
 ---
 
 ## 📄 License
