@@ -53,6 +53,7 @@ CashKeeper is a modern, feature-rich personal finance management app for Android
 - Profile
 - About
 
+
 ## 🗂️ Project Structure
 ```
 app/src/main/java/com/example/genz/
