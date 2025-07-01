@@ -134,6 +134,7 @@ app/src/main/res/menu/
    - Uses downloadable fonts (no setup needed)
    - Colors in `res/values/colors.xml`
 5. **Build & Run:** Sync Gradle, build, and run on device/emulator
+
 6. **Sign in or register to use all features**
 
 ## 🧑‍💻 Contributing
