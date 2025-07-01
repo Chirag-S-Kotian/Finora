@@ -154,7 +154,7 @@ app/src/main/res/menu/
 - **UI:** Android XML, Material Components, CardView
 - **Charts:** MPAndroidChart (BarChart)
 - **Backend:** Firebase Realtime Database, Firebase Auth, Firebase Storage
-- **IDE:** Android Studio
+- **IDE:** Android Studio Chipmunk 2021.2.1
 ---
 
 ## 📄 License
