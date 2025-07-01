@@ -88,6 +88,7 @@ app/src/main/res/menu/
 └── ...
 ```
 
+
 ## 🔗 Firebase Data Structure
 - `/ExpenseData/{uid}/` — All expense entries for user
 - `/IncomeData/{uid}/` — All income entries for user
