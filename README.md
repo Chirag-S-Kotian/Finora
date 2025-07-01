@@ -149,7 +149,6 @@ app/src/main/res/menu/
 - Check Firebase rules for database and storage access.
 - If charts don’t show, ensure MPAndroidChart is in your dependencies.
 
-
 ## 🛠️ Tech Stack
 - **Language:** Java
 - **UI:** Android XML, Material Components, CardView
