@@ -161,7 +161,6 @@ app/src/main/res/menu/
 
 ## 📄 License
 MIT License (see LICENSE file)
-
 ---
 
 
