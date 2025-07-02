@@ -166,6 +166,7 @@ MIT License (see LICENSE file)
 
 © 2025 Chirag S Kotian. CashKeeper is open-source and community-driven.
 
+
 - **Register:**
   - Endpoint: Firebase Auth (Email/Password)
   - Fields: Email, Password
