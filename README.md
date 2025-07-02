@@ -238,4 +238,5 @@ MIT License (see LICENSE file)
 # CashKeeper
 A modern personal finance management app for Android, built with Firebase and MPAndroidChart.
 
+
 This project, CashKeeper, is licensed under the [Apache 2.0](LICENSE) license.
