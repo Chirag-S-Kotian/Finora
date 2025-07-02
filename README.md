@@ -137,6 +137,7 @@ app/src/main/res/menu/
 
 6. **Sign in or register to use all features**
 
+
 ## 🧑‍💻 Contributing
 - Fork this repo and submit pull requests!
 - Please open issues for bugs or feature requests.
