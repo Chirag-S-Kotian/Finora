@@ -240,3 +240,4 @@ A modern personal finance management app for Android, built with Firebase and MP
 
 
 This project, CashKeeper, is licensed under the [Apache 2.0](LICENSE) license.
+This README provides a comprehensive overview of the CashKeeper app, its features, setup instructions, and project structure. It is designed to help developers and users understand the app's functionality and how to contribute or use it effectively.
