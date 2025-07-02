@@ -188,6 +188,7 @@ MIT License (see LICENSE file)
 - `/UserProfile/{uid}/` — Stores user profile information
 - `/Feedback/{uid}/` — Stores user feedback
 
+
 #### Example Income Entry
 ```json
 {
