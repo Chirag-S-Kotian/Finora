@@ -129,7 +129,6 @@ app/src/main/res/menu/
      apply plugin: 'com.google.gms.google-services'
      ```
 
-
 4. **Fonts/Colors:**
    - Uses downloadable fonts (no setup needed)
    - Colors in `res/values/colors.xml`
