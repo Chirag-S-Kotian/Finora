@@ -116,6 +116,7 @@ app/src/main/res/menu/
     - Open Android Studio
     - Import the project from the cloned directory
     - Ensure you have the latest Android SDK and build tools installed
+    - Sync Gradle files
 3. **Add Firebase:**
    - Download `google-services.json` from your Firebase Console
    - Place it in `app/`
