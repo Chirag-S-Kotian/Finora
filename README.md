@@ -113,6 +113,9 @@ app/src/main/res/menu/
    ```
 
 2. **Open in Android Studio** (latest recommended)
+    - Open Android Studio
+    - Import the project from the cloned directory
+    - Ensure you have the latest Android SDK and build tools installed
 3. **Add Firebase:**
    - Download `google-services.json` from your Firebase Console
    - Place it in `app/`
@@ -124,7 +127,7 @@ app/src/main/res/menu/
      implementation 'com.google.firebase:firebase-storage:20.0.0'
      implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
      ```
-     
+
    - Apply Google Services plugin at the bottom:
      ```groovy
      apply plugin: 'com.google.gms.google-services'
