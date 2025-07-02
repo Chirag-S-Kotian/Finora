@@ -224,6 +224,7 @@ MIT License (see LICENSE file)
 - User profile data is stored under `/UserProfile/{uid}/`
 - Contains fields like name, email, profile image URL, etc.
 
+
 ### Feedback
 - User feedback is stored under `/Feedback/{uid}/`
 - Contains fields like feedback text, timestamp, etc.
