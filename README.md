@@ -204,6 +204,7 @@ MIT License (see LICENSE file)
 }
 ```
 
+
 #### Example Expense Entry
 ```json
 {
