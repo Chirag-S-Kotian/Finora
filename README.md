@@ -118,7 +118,6 @@ app/src/main/res/menu/
   - Bar charts: Income and Expense (real-time, filterable)
   - Filter: All time, this month, this year, custom range
 
-
 ## ⚡ Setup & Usage
 1. **Clone the repository:**
    ```sh
