@@ -1,30 +1,45 @@
-<!-- Badges -->
+<div align="center">
+
+# 💰 CashKeeper
+
+**A Modern Personal Finance Management App for Android**
+
 <p align="center">
-  <a href="#"><img src="https://img.shields.io/badge/build-passing-brightgreen" alt="Build Status"></a>
-  <a href="#"><img src="https://img.shields.io/badge/platform-Android-blue" alt="Platform"></a>
-  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-lightgrey" alt="License"></a>
-  <a href="https://firebase.google.com/"><img src="https://img.shields.io/badge/Firebase-integrated-yellow" alt="Firebase"></a>
-  <a href="https://github.com/PhilJay/MPAndroidChart"><img src="https://img.shields.io/badge/Charts-MPAndroidChart-orange" alt="MPAndroidChart"></a>
-  <a href="https://developer.android.com/studio"><img src="https://img.shields.io/badge/IDE-Android%20Studio-green" alt="Android Studio"></a>
-  <a href="#"><img src="https://img.shields.io/badge/Open%20Source-Yes-success" alt="Open Source"></a>
-</p>
-<p align="center">
-  <!-- Play Store badge placeholder -->
-  <a href="#"><img src="https://img.shields.io/badge/Coming%20Soon-Google%20Play-black?logo=google-play" alt="Google Play"></a>
+  <img src="https://img.shields.io/badge/Platform-Android-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Platform">
+  <img src="https://img.shields.io/badge/Language-Java-ED8B00?style=for-the-badge&logo=java&logoColor=white" alt="Language">
+  <img src="https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black" alt="Firebase">
+  <img src="https://img.shields.io/badge/Android_Studio-3DDC84?style=for-the-badge&logo=android-studio&logoColor=white" alt="Android Studio">
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/build-passing-brightgreen" alt="Build Status">
-  <img src="https://img.shields.io/badge/platform-Android-blue" alt="Platform">
-  <img src="https://img.shields.io/badge/license-MIT-lightgrey" alt="License">
-  <img src="https://img.shields.io/badge/Firebase-integrated-yellow" alt="Firebase">
-  <img src="https://img.shields.io/badge/Charts-MPAndroidChart-orange" alt="MPAndroidChart">
-  <img src="https://img.shields.io/badge/IDE-Android%20Studio-green" alt="Android Studio">
-  <img src="https://img.shields.io/badge/Open%20Source-Yes-success" alt="Open Source">
+  <img src="https://img.shields.io/badge/Version-1.0.0-blue?style=for-the-badge" alt="Version">
+  <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License">
+  <img src="https://img.shields.io/badge/Build-Passing-brightgreen?style=for-the-badge" alt="Build Status">
+  <img src="https://img.shields.io/badge/Open_Source-❤️-red?style=for-the-badge" alt="Open Source">
 </p>
 
-<h1 align="center">CashKeeper</h1>
-<p align="center"><b>Modern Personal Finance Manager for Android</b></p>
+<p align="center">
+  <img src="https://img.shields.io/badge/Min_SDK-21-orange?style=for-the-badge" alt="Min SDK">
+  <img src="https://img.shields.io/badge/Target_SDK-31-blue?style=for-the-badge" alt="Target SDK">
+  <img src="https://img.shields.io/badge/Gradle-7.2-02303A?style=for-the-badge&logo=gradle&logoColor=white" alt="Gradle">
+</p>
+
+<p align="center">
+  <a href="#features">Features</a> •
+  <a href="#screenshots">Screenshots</a> •
+  <a href="#installation">Installation</a> •
+  <a href="#tech-stack">Tech Stack</a> •
+  <a href="#contributing">Contributing</a> •
+  <a href="#license">License</a>
+</p>
+
+---
+
+### 🎯 **Track. Analyze. Save. Repeat.**
+
+*CashKeeper is a comprehensive personal finance management application that helps you track income and expenses, visualize spending patterns with beautiful charts, and make informed financial decisions.*
+
+</div>
 
 ---
 ## 🌟 Overview
