@@ -186,6 +186,9 @@ MIT License (see LICENSE file)
 © 2025 Chirag S Kotian. CashKeeper is open-source and community-driven.
 
 
+## 🔐 Authentication & API Details
+
+### Authentication Methods
 - **Register:**
   - Endpoint: Firebase Auth (Email/Password)
   - Fields: Email, Password
@@ -201,16 +204,20 @@ MIT License (see LICENSE file)
   - Fields: Email
   - Action: Send password reset email
 
+---
 
-### Database Structure (Firebase Realtime Database)
+## 🗄️ Database Structure (Firebase Realtime Database)
+
+### Data Organization
 - `/IncomeData/{uid}/` — Stores user income entries
 - `/ExpenseData/{uid}/` — Stores user expense entries
 - Each entry contains: amount, type, note, date, etc.
 - `/UserProfile/{uid}/` — Stores user profile information
 - `/Feedback/{uid}/` — Stores user feedback
 
+### Sample Data Structure
 
-#### Example Income Entry
+#### Income Entry Example
 ```json
 {
   "IncomeData": {
@@ -226,8 +233,7 @@ MIT License (see LICENSE file)
 }
 ```
 
-
-#### Example Expense Entry
+#### Expense Entry Example
 ```json
 {
   "ExpenseData": {
@@ -243,27 +249,40 @@ MIT License (see LICENSE file)
 }
 ```
 
+---
 
-### Profile Management
+## 👤 Profile Management
 - User profile data is stored under `/UserProfile/{uid}/`
 - Contains fields like name, email, profile image URL, etc.
 
+---
 
-### Feedback
+## 💬 Feedback System
 - User feedback is stored under `/Feedback/{uid}/`
 - Contains fields like feedback text, timestamp, etc.
 
+---
 
-### Storage
+## 📦 Storage Management
 - Used for profile images and file uploads (Firebase Storage)
 - Images are stored under `/ProfileImages/{uid}/`
 
-### Analytics
+---
+
+## 📈 Analytics Generation
 - Dashboard analytics are generated using data from the Realtime Database
+- Real-time chart updates based on user transactions
+- Filterable by date ranges and transaction types
 
-# CashKeeper
-A modern personal finance management app for Android, built with Firebase and MPAndroidChart.
+---
 
+<div align="center">
 
-This project, CashKeeper, is licensed under the [Apache 2.0](LICENSE) license.
-This README provides a comprehensive overview of the CashKeeper app, its features, setup instructions, and project structure. It is designed to help developers and users understand the app's functionality and how to contribute or use it effectively.
+## 🤝 Support
+
+If you find this project helpful, please give it a ⭐️!
+
+[Report Bug](https://github.com/yourusername/cashkeeper/issues) • [Request Feature](https://github.com/yourusername/cashkeeper/issues) • [Documentation](https://github.com/yourusername/cashkeeper/wiki)
+
+</div>
+
