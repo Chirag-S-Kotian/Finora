@@ -110,7 +110,6 @@ app/src/main/res/menu/
 - Each entry: `{ amount, type, note, id, date }`
 - `/ProfileImages/{uid}/` — Profile images
 
-
 ## 📊 Analytics & Dashboard
 - **Dashboard:**
   - Bar chart of expenses (toggle daily/monthly)
