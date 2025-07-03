@@ -19,6 +19,7 @@
   <img src="https://img.shields.io/badge/Open_Source-❤️-red?style=for-the-badge" alt="Open Source">
 </p>
 
+
 <p align="center">
   <img src="https://img.shields.io/badge/Min_SDK-21-orange?style=for-the-badge" alt="Min SDK">
   <img src="https://img.shields.io/badge/Target_SDK-31-blue?style=for-the-badge" alt="Target SDK">
