@@ -1,7 +1,6 @@
 <div align="center">
 
 # 💰 CashKeeper
-
 **A Modern Personal Finance Management App for Android**
 
 <p align="center">
