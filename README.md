@@ -276,6 +276,324 @@ MIT License (see LICENSE file)
 
 ---
 
+## 📋 API Documentation
+
+### Firebase Realtime Database API
+
+#### Authentication Endpoints
+
+**Register User**
+```java
+FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
+    .addOnCompleteListener(task -> {
+        if (task.isSuccessful()) {
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            // User successfully registered
+        } else {
+            // Handle registration error
+        }
+    });
+```
+
+**Login User**
+```java
+FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
+    .addOnCompleteListener(task -> {
+        if (task.isSuccessful()) {
+            // User successfully logged in
+            startActivity(new Intent(this, HomeActivity.class));
+        } else {
+            // Handle login error
+        }
+    });
+```
+
+**Reset Password**
+```java
+FirebaseAuth.getInstance().sendPasswordResetEmail(email)
+    .addOnCompleteListener(task -> {
+        if (task.isSuccessful()) {
+            // Password reset email sent
+        }
+    });
+```
+
+#### Data Operations
+
+**Add Income Entry**
+```java
+String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+DatabaseReference incomeRef = FirebaseDatabase.getInstance()
+    .getReference().child("IncomeData").child(uid);
+
+String id = incomeRef.push().getKey();
+String date = DateFormat.getDateInstance().format(new Date());
+Data incomeData = new Data(amount, type, note, id, date);
+
+incomeRef.child(id).setValue(incomeData)
+    .addOnSuccessListener(aVoid -> {
+        // Income added successfully
+        Toast.makeText(context, "Income added!", Toast.LENGTH_SHORT).show();
+    })
+    .addOnFailureListener(e -> {
+        // Handle error
+        Log.e("Firebase", "Error adding income: " + e.getMessage());
+    });
+```
+
+**Add Expense Entry**
+```java
+String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+DatabaseReference expenseRef = FirebaseDatabase.getInstance()
+    .getReference().child("ExpenseData").child(uid);
+
+String id = expenseRef.push().getKey();
+String date = DateFormat.getDateInstance().format(new Date());
+Data expenseData = new Data(amount, type, note, id, date);
+
+expenseRef.child(id).setValue(expenseData)
+    .addOnSuccessListener(aVoid -> {
+        // Expense added successfully
+    })
+    .addOnFailureListener(e -> {
+        // Handle error
+    });
+```
+
+**Retrieve User Data**
+```java
+DatabaseReference userDataRef = FirebaseDatabase.getInstance()
+    .getReference().child("ExpenseData").child(uid);
+
+userDataRef.addValueEventListener(new ValueEventListener() {
+    @Override
+    public void onDataChange(@NonNull DataSnapshot snapshot) {
+        List<Data> expenses = new ArrayList<>();
+        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+            Data expense = dataSnapshot.getValue(Data.class);
+            if (expense != null) {
+                expenses.add(expense);
+            }
+        }
+        // Update UI with expenses
+        updateExpensesList(expenses);
+    }
+    
+    @Override
+    public void onCancelled(@NonNull DatabaseError error) {
+        Log.e("Firebase", "Error loading data: " + error.getMessage());
+    }
+});
+```
+
+**Update Data Entry**
+```java
+Map<String, Object> updates = new HashMap<>();
+updates.put("amount", newAmount);
+updates.put("type", newType);
+updates.put("note", newNote);
+
+DatabaseReference itemRef = FirebaseDatabase.getInstance()
+    .getReference().child("ExpenseData").child(uid).child(itemId);
+
+itemRef.updateChildren(updates)
+    .addOnSuccessListener(aVoid -> {
+        // Update successful
+    })
+    .addOnFailureListener(e -> {
+        // Handle error
+    });
+```
+
+**Delete Data Entry**
+```java
+DatabaseReference itemRef = FirebaseDatabase.getInstance()
+    .getReference().child("ExpenseData").child(uid).child(itemId);
+
+itemRef.removeValue()
+    .addOnSuccessListener(aVoid -> {
+        // Deletion successful
+        Toast.makeText(context, "Item deleted", Toast.LENGTH_SHORT).show();
+    })
+    .addOnFailureListener(e -> {
+        // Handle error
+    });
+```
+
+### Firebase Storage API
+
+**Upload Profile Image**
+```java
+StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+StorageReference profileImagesRef = storageRef.child("ProfileImages/" + uid + "/profile.jpg");
+
+UploadTask uploadTask = profileImagesRef.putFile(imageUri);
+uploadTask.addOnSuccessListener(taskSnapshot -> {
+    // Get download URL
+    profileImagesRef.getDownloadUrl().addOnSuccessListener(uri -> {
+        String downloadUrl = uri.toString();
+        // Save URL to user profile in database
+        updateUserProfileImage(downloadUrl);
+    });
+}).addOnFailureListener(exception -> {
+    // Handle upload error
+});
+```
+
+### Chart Integration Examples
+
+**Setup Bar Chart**
+```java
+private void setupBarChart(BarChart chart) {
+    chart.getDescription().setEnabled(false);
+    chart.getXAxis().setDrawGridLines(false);
+    chart.getAxisRight().setEnabled(false);
+    chart.getAxisLeft().setDrawGridLines(false);
+    chart.setExtraOffsets(10, 10, 10, 10);
+    chart.animateY(1000);
+}
+
+private void updateBarChart(Map<String, Float> data) {
+    ArrayList<BarEntry> entries = new ArrayList<>();
+    int index = 0;
+    for (Map.Entry<String, Float> entry : data.entrySet()) {
+        entries.add(new BarEntry(index++, entry.getValue()));
+    }
+    
+    BarDataSet dataSet = new BarDataSet(entries, "Expenses");
+    dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+    
+    BarData barData = new BarData(dataSet);
+    chart.setData(barData);
+    chart.invalidate();
+}
+```
+
+**Setup Pie Chart**
+```java
+private void setupPieChart(PieChart chart) {
+    chart.setUsePercentValues(true);
+    chart.getDescription().setEnabled(false);
+    chart.setDrawHoleEnabled(true);
+    chart.setHoleColor(Color.WHITE);
+    chart.setRotationEnabled(true);
+    
+    Legend legend = chart.getLegend();
+    legend.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
+    legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
+    legend.setOrientation(Legend.LegendOrientation.VERTICAL);
+}
+
+private void updatePieChart(Map<String, Float> categoryData) {
+    ArrayList<PieEntry> entries = new ArrayList<>();
+    for (Map.Entry<String, Float> entry : categoryData.entrySet()) {
+        entries.add(new PieEntry(entry.getValue(), entry.getKey()));
+    }
+    
+    PieDataSet dataSet = new PieDataSet(entries, "Categories");
+    dataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+    
+    PieData pieData = new PieData(dataSet);
+    chart.setData(pieData);
+    chart.invalidate();
+}
+```
+
+### Error Handling Best Practices
+
+**Network Error Handling**
+```java
+private void handleFirebaseError(DatabaseError error) {
+    String errorMessage;
+    switch (error.getCode()) {
+        case DatabaseError.NETWORK_ERROR:
+            errorMessage = "Network connection failed. Please check your internet.";
+            break;
+        case DatabaseError.PERMISSION_DENIED:
+            errorMessage = "Access denied. Please login again.";
+            break;
+        case DatabaseError.UNAVAILABLE:
+            errorMessage = "Service temporarily unavailable. Try again later.";
+            break;
+        default:
+            errorMessage = "An error occurred: " + error.getMessage();
+    }
+    
+    Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show();
+    Log.e("FirebaseError", "Error: " + error.getDetails());
+}
+```
+
+**Input Validation**
+```java
+private boolean validateInput(String amount, String type) {
+    if (TextUtils.isEmpty(amount)) {
+        editTextAmount.setError("Amount is required");
+        return false;
+    }
+    
+    if (TextUtils.isEmpty(type)) {
+        editTextType.setError("Type is required");
+        return false;
+    }
+    
+    try {
+        double amountValue = Double.parseDouble(amount);
+        if (amountValue <= 0) {
+            editTextAmount.setError("Amount must be positive");
+            return false;
+        }
+    } catch (NumberFormatException e) {
+        editTextAmount.setError("Invalid amount format");
+        return false;
+    }
+    
+    return true;
+}
+```
+
+### Usage Examples
+
+**Complete Income Addition Flow**
+```java
+public void addIncome(View view) {
+    String amountStr = editTextAmount.getText().toString().trim();
+    String type = editTextType.getText().toString().trim();
+    String note = editTextNote.getText().toString().trim();
+    
+    if (!validateInput(amountStr, type)) {
+        return;
+    }
+    
+    int amount = Integer.parseInt(amountStr);
+    String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+    DatabaseReference incomeRef = FirebaseDatabase.getInstance()
+        .getReference().child("IncomeData").child(uid);
+    
+    String id = incomeRef.push().getKey();
+    String date = DateFormat.getDateInstance().format(new Date());
+    Data incomeData = new Data(amount, type, note, id, date);
+    
+    // Show loading indicator
+    progressBar.setVisibility(View.VISIBLE);
+    
+    incomeRef.child(id).setValue(incomeData)
+        .addOnSuccessListener(aVoid -> {
+            progressBar.setVisibility(View.GONE);
+            Toast.makeText(this, "Income added successfully!", Toast.LENGTH_SHORT).show();
+            clearForm();
+            updateTotalIncome();
+        })
+        .addOnFailureListener(e -> {
+            progressBar.setVisibility(View.GONE);
+            Toast.makeText(this, "Failed to add income: " + e.getMessage(), 
+                Toast.LENGTH_LONG).show();
+        });
+}
+```
+
+---
+
 <div align="center">
 
 ## 🤝 Support
