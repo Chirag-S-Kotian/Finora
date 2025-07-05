@@ -268,7 +268,6 @@ MIT License (see LICENSE file)
 - Contains fields like feedback text, timestamp, etc.
 
 ---
-
 ## 📦 Storage Management
 - Used for profile images and file uploads (Firebase Storage)
 - Images are stored under `/ProfileImages/{uid}/`
