@@ -267,7 +267,6 @@ MIT License (see LICENSE file)
 - User feedback is stored under `/Feedback/{uid}/`
 - Contains fields like feedback text, timestamp, etc.
 
-
 ---
 ## 📦 Storage Management
 - Used for profile images and file uploads (Firebase Storage)
