@@ -281,6 +281,7 @@ MIT License (see LICENSE file)
 - Real-time chart updates based on user transactions
 - Filterable by date ranges and transaction types
 
+
 ---
 
 ## 📋 API Documentation
