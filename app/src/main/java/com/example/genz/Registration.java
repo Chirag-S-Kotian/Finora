@@ -97,8 +97,28 @@ public class Registration extends AppCompatActivity {
                             }
                         } else {
                             String errorMsg = "Registration failed.";
-                            if (task.getException() != null) {
-                                errorMsg = task.getException().getMessage();
+                            Exception ex = task.getException();
+                            if (ex != null) {
+                                String msg = ex.getMessage();
+                                if (msg != null) {
+                                    if (msg.contains("The email address is already in use")) {
+                                        errorMsg = "This email is already registered. Please login or use a different email.";
+                                        mEmail.setError(errorMsg);
+                                        mEmail.requestFocus();
+                                    } else if (msg.contains("The given password is invalid")) {
+                                        errorMsg = "Password is too weak. Please use at least 6 characters.";
+                                        mPass.setError(errorMsg);
+                                        mPass.requestFocus();
+                                    } else if (msg.contains("The email address is badly formatted")) {
+                                        errorMsg = "Invalid email format.";
+                                        mEmail.setError(errorMsg);
+                                        mEmail.requestFocus();
+                                    } else if (msg.contains("A network error")) {
+                                        errorMsg = "Network error. Please check your connection.";
+                                    } else {
+                                        errorMsg = msg;
+                                    }
+                                }
                             }
                             Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_LONG).show();
                         }
