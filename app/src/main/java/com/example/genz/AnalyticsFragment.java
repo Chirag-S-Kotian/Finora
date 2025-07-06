@@ -1,24 +1,28 @@
 package com.example.finora;
 
+
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Spinner;
 import android.widget.Button;
-import android.widget.AdapterView;
-import android.app.DatePickerDialog;
-import java.util.Calendar;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.utils.ColorTemplate;
-import android.util.Log;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -26,235 +30,396 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
 import com.example.myapplication.Model.Data;
+
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Calendar;
+import java.util.Date;
 
 public class AnalyticsFragment extends Fragment {
-    private BarChart expenseBarChart;
-    private BarChart incomeBarChart;
-    private Spinner spinnerFilter;
-    private Button btnStartDate, btnEndDate;
-    private String filterType = "All Time";
-    private long customStart = 0, customEnd = 0;
+
+    PieChart pieChart;
+    BarChart barChart;
+
+    TextView totalSpentView, breakdownTextView;
+
+    float latestPieTotal = 1f; // to prevent divide-by-zero
+    List<PieEntry> latestPieEntries = new ArrayList<>();
 
     private FirebaseAuth mAuth;
     private FirebaseUser mUser;
-    private DatabaseReference expenseRef, incomeRef;
+    private DatabaseReference mIncomeDatabase, mExpenseDatabase;
     private String uid;
 
-    private final SimpleDateFormat firebaseFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
-    private final SimpleDateFormat chartFormat = new SimpleDateFormat("MMM dd", Locale.getDefault());
-    private final SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
-    private final SimpleDateFormat monthYearFormat = new SimpleDateFormat("MMM yyyy", Locale.getDefault());
+    // For chart data
+    private List<Data> incomeList = new ArrayList<>();
+    private List<Data> expenseList = new ArrayList<>();
 
-    // Only keep BarChart logic for expense and income
-
-    private void setupRealtimeListeners() {
-        expenseRef.addValueEventListener(new ValueEventListener() {
+    /**
+     * Fetch all income and expense data from Firebase, populate lists, and update charts.
+     */
+    private void fetchAllDataAndLoadCharts() {
+        if (mIncomeDatabase == null || mExpenseDatabase == null) return;
+        incomeList.clear();
+        expenseList.clear();
+        // Fetch income data
+        mIncomeDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot expenseSnap) {
-                Map<String, Float> expenseDateTotals = new HashMap<>();
-                long startMillis = 0, endMillis = Long.MAX_VALUE;
-                if (filterType.equals("This Month")) {
-                    Date now = new Date();
-                    String monthYear = monthYearFormat.format(now);
-                    try {
-                        startMillis = monthYearFormat.parse(monthYear).getTime();
-                        endMillis = startMillis + 31L * 24 * 60 * 60 * 1000;
-                    } catch (Exception ignored) {}
-                } else if (filterType.equals("This Year")) {
-                    Date now = new Date();
-                    String year = yearFormat.format(now);
-                    try {
-                        startMillis = yearFormat.parse(year).getTime();
-                        endMillis = startMillis + 366L * 24 * 60 * 60 * 1000;
-                    } catch (Exception ignored) {}
-                } else if (filterType.equals("Custom Range")) {
-                    startMillis = customStart;
-                    endMillis = customEnd;
-                }
-                for (DataSnapshot ds : expenseSnap.getChildren()) {
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                incomeList.clear();
+                for (DataSnapshot ds : snapshot.getChildren()) {
                     Data data = ds.getValue(Data.class);
-                    if (data == null) continue;
-                    try {
-                        Log.d("AnalyticsDebug", "Expense Data: " + data.getAmount() + ", " + data.getDate());
-                        Date d = firebaseFormat.parse(data.getDate());
-                        if (d == null) {
-                            Log.e("AnalyticsDebug", "Date parse failed for: " + data.getDate());
-                            continue;
+                    if (data != null) incomeList.add(data);
+                }
+                // Fetch expense data only after income is loaded
+                mExpenseDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        expenseList.clear();
+                        for (DataSnapshot ds : snapshot.getChildren()) {
+                            Data data = ds.getValue(Data.class);
+                            if (data != null) expenseList.add(data);
                         }
-                        long millis = d.getTime();
-                        if (millis < startMillis || millis > endMillis) continue;
-                        float amount = (float) data.getAmount();
-                        String dayKey = chartFormat.format(d);
-                        expenseDateTotals.put(dayKey, expenseDateTotals.getOrDefault(dayKey, 0f) + amount);
-                    } catch (Exception e) {
-                        Log.e("AnalyticsDebug", "Expense parse error: " + e.getMessage());
+                        // Now update charts
+                        loadMonthlyBarChart();
+                        loadMonthlyPieChart();
                     }
-                }
-                updateExpenseBarChart(expenseDateTotals);
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        // Optionally show error
+                    }
+                });
             }
-            @Override public void onCancelled(@NonNull DatabaseError error) { }
-        });
-
-        incomeRef.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot incomeSnap) {
-                Map<String, Float> incomeDateTotals = new HashMap<>();
-                long startMillis = 0, endMillis = Long.MAX_VALUE;
-                if (filterType.equals("This Month")) {
-                    Date now = new Date();
-                    String monthYear = monthYearFormat.format(now);
-                    try {
-                        startMillis = monthYearFormat.parse(monthYear).getTime();
-                        endMillis = startMillis + 31L * 24 * 60 * 60 * 1000;
-                    } catch (Exception ignored) {}
-                } else if (filterType.equals("This Year")) {
-                    Date now = new Date();
-                    String year = yearFormat.format(now);
-                    try {
-                        startMillis = yearFormat.parse(year).getTime();
-                        endMillis = startMillis + 366L * 24 * 60 * 60 * 1000;
-                    } catch (Exception ignored) {}
-                } else if (filterType.equals("Custom Range")) {
-                    startMillis = customStart;
-                    endMillis = customEnd;
-                }
-                for (DataSnapshot ds : incomeSnap.getChildren()) {
-                    Data data = ds.getValue(Data.class);
-                    if (data == null) continue;
-                    try {
-                        Date d = firebaseFormat.parse(data.getDate());
-                        if (d == null) continue;
-                        long millis = d.getTime();
-                        if (millis < startMillis || millis > endMillis) continue;
-                        float amount = (float) data.getAmount();
-                        String dayKey = chartFormat.format(d);
-                        incomeDateTotals.put(dayKey, incomeDateTotals.getOrDefault(dayKey, 0f) + amount);
-                    } catch (Exception ignored) {}
-                }
-                updateIncomeBarChart(incomeDateTotals);
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Optionally show error
             }
-            @Override public void onCancelled(@NonNull DatabaseError error) { }
         });
     }
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(android.view.LayoutInflater inflater, android.view.ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_analytics, container, false);
-        
-        
-        expenseBarChart = view.findViewById(R.id.expense_bar_chart);
-        incomeBarChart = view.findViewById(R.id.income_bar_chart);
-        spinnerFilter = view.findViewById(R.id.spinner_filter);
-        btnStartDate = view.findViewById(R.id.btn_start_date);
-        btnEndDate = view.findViewById(R.id.btn_end_date);
 
+        pieChart = view.findViewById(R.id.pieChart);
+        barChart = view.findViewById(R.id.barChart);
+
+        totalSpentView = view.findViewById(R.id.totalSpentText);
+        breakdownTextView = view.findViewById(R.id.breakdownTextView);
+
+        // Button references
+        Button btnLast6Months = view.findViewById(R.id.btnLast6Months);
+        Button btnDaily = view.findViewById(R.id.btnDaily);
+        Button btnPieMonthly = view.findViewById(R.id.btnPieMonthly);
+        Button btnPieDaily = view.findViewById(R.id.btnPieDaily);
+
+        // Firebase init
         mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
-        if (mUser == null) return view;
-        uid = mUser.getUid();
-        expenseRef = FirebaseDatabase.getInstance().getReference().child("ExpenseData").child(uid);
-        incomeRef = FirebaseDatabase.getInstance().getReference().child("IncomeData").child(uid);
+        if (mUser != null) {
+            uid = mUser.getUid();
+            mIncomeDatabase = FirebaseDatabase.getInstance().getReference().child("IncomeData").child(uid);
+            mExpenseDatabase = FirebaseDatabase.getInstance().getReference().child("ExpenseData").child(uid);
+        }
 
-        setupFilterControls();
-        setupRealtimeListeners();
+        // Default selection: monthly for both charts
+        // Button highlight helper
+        View.OnClickListener barListener = v -> {
+            if (v == btnDaily) {
+                highlightBarButton(btnDaily, btnLast6Months);
+                loadDailyBarChart();
+            } else {
+                highlightBarButton(btnLast6Months, btnDaily);
+                loadMonthlyBarChart();
+            }
+        };
+        View.OnClickListener pieListener = v -> {
+            if (v == btnPieDaily) {
+                highlightPieButton(btnPieDaily, btnPieMonthly);
+                loadDailyPieChart();
+            } else {
+                highlightPieButton(btnPieMonthly, btnPieDaily);
+                loadMonthlyPieChart();
+            }
+        };
+        btnDaily.setOnClickListener(barListener);
+        btnLast6Months.setOnClickListener(barListener);
+        btnPieDaily.setOnClickListener(pieListener);
+        btnPieMonthly.setOnClickListener(pieListener);
+        // Set initial highlight and load
+        highlightBarButton(btnLast6Months, btnDaily);
+        highlightPieButton(btnPieMonthly, btnPieDaily);
+        fetchAllDataAndLoadCharts();
         return view;
     }
 
-    private void setupFilterControls() {
-        spinnerFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                filterType = parent.getItemAtPosition(position).toString();
-                boolean custom = filterType.equals("Custom Range");
-                btnStartDate.setVisibility(custom ? View.VISIBLE : View.GONE);
-                btnEndDate.setVisibility(custom ? View.VISIBLE : View.GONE);
-                if (!custom) setupRealtimeListeners();
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) { }
-        });
-        btnStartDate.setOnClickListener(v -> showDatePicker(true));
-        btnEndDate.setOnClickListener(v -> showDatePicker(false));
+    // Helper to highlight selected bar chart button
+    private void highlightBarButton(Button selected, Button other) {
+        selected.setBackgroundColor(Color.parseColor("#ffcb47"));
+        selected.setTextColor(Color.BLACK);
+        other.setBackgroundColor(Color.LTGRAY);
+        other.setTextColor(Color.DKGRAY);
+    }
+    // Helper to highlight selected pie chart button
+    private void highlightPieButton(Button selected, Button other) {
+        selected.setBackgroundColor(Color.parseColor("#ff6b6b"));
+        selected.setTextColor(Color.WHITE);
+        other.setBackgroundColor(Color.LTGRAY);
+        other.setTextColor(Color.DKGRAY);
     }
 
-    private void showDatePicker(boolean isStart) {
+    private void updateTotalSpent(float total) {
+        latestPieTotal = total; // update latest total for slice breakdown
+        NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("en", "IN"));
+        String formatted = formatter.format(total);
+        totalSpentView.setText("Total Spent: " + formatted);
+    }
+
+    private void setPieClickListener() {
+        pieChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(com.github.mikephil.charting.data.Entry e, Highlight h) {
+                if (e instanceof PieEntry) {
+                    PieEntry pe = (PieEntry) e;
+                    float percent = (pe.getValue() / latestPieTotal) * 100;
+                    String breakdown = pe.getLabel() + ": ₹" + pe.getValue() +
+                            String.format(" (%.1f%%)", percent);
+                    breakdownTextView.setText(breakdown);
+                }
+            }
+
+            @Override
+            public void onNothingSelected() {
+                breakdownTextView.setText("");
+            }
+        });
+    }
+
+    private void loadMonthlyPieChart() {
+        // Aggregate EXPENSE by category for last 6 months
+        latestPieEntries.clear();
+        Map<String, Float> categoryTotals = new HashMap<>();
         Calendar cal = Calendar.getInstance();
-        DatePickerDialog dlg = new DatePickerDialog(getContext(), (view, year, month, day) -> {
-            Calendar picked = Calendar.getInstance();
-            picked.set(year, month, day, 0, 0, 0);
-            if (isStart) {
-                customStart = picked.getTimeInMillis();
-                btnStartDate.setText("Start: " + chartFormat.format(picked.getTime()));
-            } else {
-                customEnd = picked.getTimeInMillis();
-                btnEndDate.setText("End: " + chartFormat.format(picked.getTime()));
+        cal.add(Calendar.MONTH, -6);
+        Date sixMonthsAgo = cal.getTime();
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
+        for (Data data : expenseList) {
+            try {
+                Date entryDate = sdf.parse(data.getDate());
+                if (entryDate != null && entryDate.after(sixMonthsAgo)) {
+                    String cat = data.getType();
+                    float amt = data.getAmount();
+                    categoryTotals.put(cat, categoryTotals.getOrDefault(cat, 0f) + amt);
+                }
+            } catch (ParseException e) { /* skip */ }
+        }
+        for (Map.Entry<String, Float> entry : categoryTotals.entrySet()) {
+            latestPieEntries.add(new PieEntry(entry.getValue(), entry.getKey()));
+        }
+        PieDataSet dataSet = new PieDataSet(latestPieEntries, "");
+        dataSet.setColors(Color.parseColor("#ffcb47"), Color.parseColor("#ff6b6b"), Color.parseColor("#2196f3"), Color.parseColor("#f44336"), Color.parseColor("#4caf50"), Color.parseColor("#9c27b0"));
+        PieData pieData = new PieData(dataSet);
+        pieData.setValueTextSize(14f);
+        pieData.setValueTextColor(Color.BLACK);
+        pieChart.setData(pieData);
+        pieChart.setDrawHoleEnabled(true);
+        pieChart.setHoleRadius(40f);
+        pieChart.setHoleColor(Color.TRANSPARENT);
+        pieChart.setCenterText("Spending");
+        pieChart.setCenterTextSize(18f);
+        pieChart.setEntryLabelColor(Color.BLACK);
+        pieChart.setEntryLabelTextSize(12f);
+        pieChart.getDescription().setEnabled(false);
+        pieChart.getLegend().setEnabled(false);
+        pieChart.animateY(1000);
+        pieChart.invalidate();
+        float total = 0;
+        for (PieEntry entry : latestPieEntries) {
+            total += entry.getValue();
+        }
+        updateTotalSpent(total);
+        setPieClickListener();
+    }
+
+    private void loadDailyPieChart() {
+        // Aggregate EXPENSE by category for today
+        latestPieEntries.clear();
+        Map<String, Float> categoryTotals = new HashMap<>();
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
+        String todayStr = sdf.format(new Date());
+        for (Data data : expenseList) {
+            if (todayStr.equals(data.getDate())) {
+                String cat = data.getType();
+                float amt = data.getAmount();
+                categoryTotals.put(cat, categoryTotals.getOrDefault(cat, 0f) + amt);
             }
-            if (customStart > 0 && customEnd > 0) setupRealtimeListeners();
-        }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
-        dlg.show();
+        }
+        for (Map.Entry<String, Float> entry : categoryTotals.entrySet()) {
+            latestPieEntries.add(new PieEntry(entry.getValue(), entry.getKey()));
+        }
+        PieDataSet dataSet = new PieDataSet(latestPieEntries, "");
+        dataSet.setColors(Color.parseColor("#ffcb47"), Color.parseColor("#ff6b6b"), Color.parseColor("#2196f3"), Color.parseColor("#f44336"), Color.parseColor("#4caf50"), Color.parseColor("#9c27b0"));
+        PieData pieData = new PieData(dataSet);
+        pieData.setValueTextSize(14f);
+        pieData.setValueTextColor(Color.BLACK);
+        pieChart.setData(pieData);
+        pieChart.setDrawHoleEnabled(true);
+        pieChart.setHoleRadius(40f);
+        pieChart.setHoleColor(Color.TRANSPARENT);
+        pieChart.setCenterText("Daily Spending");
+        pieChart.setCenterTextSize(18f);
+        pieChart.setEntryLabelColor(Color.BLACK);
+        pieChart.setEntryLabelTextSize(12f);
+        pieChart.getDescription().setEnabled(false);
+        pieChart.getLegend().setEnabled(false);
+        pieChart.animateY(1000);
+        pieChart.invalidate();
+        float total = 0;
+        for (PieEntry entry : latestPieEntries) {
+            total += entry.getValue();
+        }
+        updateTotalSpent(total);
+        setPieClickListener();
     }
 
-    private void updateExpenseBarChart(Map<String, Float> expenseDateTotals) {
-        // Sort dates
-        List<String> sortedDates = new ArrayList<>(expenseDateTotals.keySet());
-        sortedDates.sort((d1, d2) -> {
+    private void loadMonthlyBarChart() {
+        // Aggregate by month for last 6 months
+        List<BarEntry> incomeEntries = new ArrayList<>();
+        List<BarEntry> expenseEntries = new ArrayList<>();
+        SimpleDateFormat monthFormat = new SimpleDateFormat("MMM yyyy", Locale.getDefault());
+        Map<String, Float> incomeMonthTotals = new HashMap<>();
+        Map<String, Float> expenseMonthTotals = new HashMap<>();
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.MONTH, -6);
+        Date sixMonthsAgo = cal.getTime();
+        // Fill maps
+        for (Data data : incomeList) {
             try {
-                return chartFormat.parse(d1).compareTo(chartFormat.parse(d2));
-            } catch (Exception e) { return d1.compareTo(d2); }
+                Date entryDate = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).parse(data.getDate());
+                if (entryDate != null && entryDate.after(sixMonthsAgo)) {
+                    String month = monthFormat.format(entryDate);
+                    float amt = data.getAmount();
+                    incomeMonthTotals.put(month, incomeMonthTotals.getOrDefault(month, 0f) + amt);
+                }
+            } catch (ParseException e) { /* skip */ }
+        }
+        for (Data data : expenseList) {
+            try {
+                Date entryDate = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).parse(data.getDate());
+                if (entryDate != null && entryDate.after(sixMonthsAgo)) {
+                    String month = monthFormat.format(entryDate);
+                    float amt = data.getAmount();
+                    expenseMonthTotals.put(month, expenseMonthTotals.getOrDefault(month, 0f) + amt);
+                }
+            } catch (ParseException e) { /* skip */ }
+        }
+        // Sort months
+        List<String> months = new ArrayList<>(incomeMonthTotals.keySet());
+        for (String m : expenseMonthTotals.keySet()) {
+            if (!months.contains(m)) months.add(m);
+        }
+        months.sort((a, b) -> {
+            try {
+                return monthFormat.parse(a).compareTo(monthFormat.parse(b));
+            } catch (Exception e) { return a.compareTo(b); }
         });
-        ArrayList<BarEntry> entries = new ArrayList<>();
-        int idx = 0;
-        for (String date : sortedDates) {
-            entries.add(new BarEntry(idx++, expenseDateTotals.get(date)));
+        for (int i = 0; i < months.size(); i++) {
+            String m = months.get(i);
+            incomeEntries.add(new BarEntry(i, incomeMonthTotals.getOrDefault(m, 0f)));
+            expenseEntries.add(new BarEntry(i, expenseMonthTotals.getOrDefault(m, 0f)));
         }
-        // If no data, show a placeholder bar
-        if (entries.isEmpty()) {
-            entries.add(new BarEntry(0, 0f));
-        }
-        BarDataSet dataSet = new BarDataSet(entries, "Expenses");
-        dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
-        dataSet.setValueTextColor(Color.DKGRAY);
-        dataSet.setValueTextSize(14f);
-        BarData data = new BarData(dataSet);
-        expenseBarChart.setData(data);
-        expenseBarChart.getDescription().setEnabled(false);
-        expenseBarChart.getXAxis().setDrawGridLines(false);
-        expenseBarChart.getAxisRight().setEnabled(false);
-        expenseBarChart.animateY(900);
-        expenseBarChart.invalidate();
+        BarDataSet incomeDataSet = new BarDataSet(incomeEntries, "Income");
+        incomeDataSet.setColor(Color.parseColor("#ffcb47"));
+        BarDataSet expenseDataSet = new BarDataSet(expenseEntries, "Expense");
+        expenseDataSet.setColor(Color.parseColor("#ff6b6b"));
+        BarData data = new BarData(incomeDataSet, expenseDataSet);
+        data.setBarWidth(0.4f);
+        barChart.setData(data);
+        barChart.groupBars(0f, 0.2f, 0.02f);
+        XAxis xAxis = barChart.getXAxis();
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(months.toArray(new String[0])));
+        xAxis.setGranularity(1f);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawGridLines(false);
+        xAxis.setCenterAxisLabels(true);
+        xAxis.setAxisMinimum(0f);
+        xAxis.setAxisMaximum(months.size());
+        barChart.getAxisLeft().setAxisMinimum(0f);
+        barChart.getAxisRight().setEnabled(false);
+        barChart.setFitBars(true);
+        barChart.getDescription().setEnabled(false);
+        barChart.getLegend().setEnabled(true);
+        barChart.invalidate();
     }
 
-    private void updateIncomeBarChart(Map<String, Float> incomeDateTotals) {
-        List<String> sortedDates = new ArrayList<>(incomeDateTotals.keySet());
-        sortedDates.sort((d1, d2) -> {
+    private void loadDailyBarChart() {
+        // Aggregate by day for current week (Mon-Sun)
+        List<BarEntry> incomeEntries = new ArrayList<>();
+        List<BarEntry> expenseEntries = new ArrayList<>();
+        String[] days = new String[]{"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+        Map<String, Float> incomeDayTotals = new HashMap<>();
+        Map<String, Float> expenseDayTotals = new HashMap<>();
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE", Locale.getDefault());
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        Date weekStart = cal.getTime();
+        cal.add(Calendar.DAY_OF_WEEK, 6);
+        Date weekEnd = cal.getTime();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
+        for (Data data : incomeList) {
             try {
-                return chartFormat.parse(d1).compareTo(chartFormat.parse(d2));
-            } catch (Exception e) { return d1.compareTo(d2); }
-        });
-        ArrayList<BarEntry> entries = new ArrayList<>();
-        int idx = 0;
-        for (String date : sortedDates) {
-            entries.add(new BarEntry(idx++, incomeDateTotals.get(date)));
+                Date entryDate = dateFormat.parse(data.getDate());
+                if (entryDate != null && !entryDate.before(weekStart) && !entryDate.after(weekEnd)) {
+                    String day = sdf.format(entryDate);
+                    float amt = data.getAmount();
+                    incomeDayTotals.put(day, incomeDayTotals.getOrDefault(day, 0f) + amt);
+                }
+            } catch (ParseException e) { /* skip */ }
         }
-        BarDataSet dataSet = new BarDataSet(entries, "Income");
-        dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
-        dataSet.setValueTextColor(Color.DKGRAY);
-        dataSet.setValueTextSize(14f);
-        BarData data = new BarData(dataSet);
-        incomeBarChart.setData(data);
-        incomeBarChart.getDescription().setEnabled(false);
-        incomeBarChart.getXAxis().setDrawGridLines(false);
-        incomeBarChart.getAxisRight().setEnabled(false);
-        incomeBarChart.animateY(900);
-        incomeBarChart.invalidate();
+        for (Data data : expenseList) {
+            try {
+                Date entryDate = dateFormat.parse(data.getDate());
+                if (entryDate != null && !entryDate.before(weekStart) && !entryDate.after(weekEnd)) {
+                    String day = sdf.format(entryDate);
+                    float amt = data.getAmount();
+                    expenseDayTotals.put(day, expenseDayTotals.getOrDefault(day, 0f) + amt);
+                }
+            } catch (ParseException e) { /* skip */ }
+        }
+        for (int i = 0; i < days.length; i++) {
+            String d = days[i];
+            incomeEntries.add(new BarEntry(i, incomeDayTotals.getOrDefault(d, 0f)));
+            expenseEntries.add(new BarEntry(i, expenseDayTotals.getOrDefault(d, 0f)));
+        }
+        BarDataSet incomeDataSet = new BarDataSet(incomeEntries, "Income");
+        incomeDataSet.setColor(Color.parseColor("#2196f3"));
+        BarDataSet expenseDataSet = new BarDataSet(expenseEntries, "Expense");
+        expenseDataSet.setColor(Color.parseColor("#f44336"));
+        BarData data = new BarData(incomeDataSet, expenseDataSet);
+        data.setBarWidth(0.4f);
+        barChart.setData(data);
+        barChart.groupBars(0f, 0.2f, 0.02f);
+        XAxis xAxis = barChart.getXAxis();
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(days));
+        xAxis.setGranularity(1f);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawGridLines(false);
+        xAxis.setCenterAxisLabels(true);
+        xAxis.setAxisMinimum(0f);
+        xAxis.setAxisMaximum(days.length);
+        barChart.getAxisLeft().setAxisMinimum(0f);
+        barChart.getAxisRight().setEnabled(false);
+        barChart.setFitBars(true);
+        barChart.getDescription().setEnabled(false);
+        barChart.getLegend().setEnabled(true);
+        barChart.invalidate();
     }
 }
