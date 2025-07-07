@@ -3,7 +3,6 @@
 # 💰 CashKeeper
 **A Modern Personal Finance Management App for Android**
 
-
 <p align="center">
   <img src="https://img.shields.io/badge/Platform-Android-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Platform">
   <img src="https://img.shields.io/badge/Language-Java-ED8B00?style=for-the-badge&logo=java&logoColor=white" alt="Language">
