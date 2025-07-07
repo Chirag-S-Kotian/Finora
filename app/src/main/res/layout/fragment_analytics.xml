@@ -79,6 +79,18 @@
             android:layout_height="300dp"
             android:layout_marginTop="16dp" />
 
+        <TextView
+            android:id="@+id/barChartEmptyText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="No data available for the selected period."
+            android:textColor="#b0b0b0"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:layout_marginTop="-260dp"
+            android:layout_marginBottom="244dp"
+            android:visibility="gone" />
+
         <!-- Spending Breakdown -->
         <TextView
             android:layout_marginTop="32dp"
@@ -121,6 +133,18 @@
             android:layout_height="300dp"
             android:layout_gravity="center"
             android:layout_marginTop="16dp" />
+
+        <TextView
+            android:id="@+id/pieChartEmptyText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="No data available for the selected day."
+            android:textColor="#b0b0b0"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:layout_marginTop="-260dp"
+            android:layout_marginBottom="244dp"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/totalSpentText"
