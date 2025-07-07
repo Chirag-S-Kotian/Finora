@@ -461,11 +461,10 @@ public class DashboardFragment extends Fragment {
                     edtNote.setError("Required Field..");
                     return;
                 }
-                if(mAuth.getCurrentUser()!=null && balance!=0.0 && balance>0.0) {
+                if(mAuth.getCurrentUser()!=null) {
                     String id = mExpenseDatabase.push().getKey();
-                    String mDate = DateFormat.getDateInstance().format(new Date());
+                    String mDate = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(new Date());
                     Data data = new Data(ouramountinte, type, note, id, mDate);
-
                     mExpenseDatabase.child(id).setValue(data);
                     Toast.makeText(getActivity(),"Data ADDED",Toast.LENGTH_SHORT).show();
                 }
