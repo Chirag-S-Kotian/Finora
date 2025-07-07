@@ -36,7 +36,6 @@
   <a href="#license">License</a>
 </p>
 
-
 ---
 
 ### 🎯 **Track. Analyze. Save. Repeat.**
