@@ -67,6 +67,7 @@ CashKeeper is a modern, feature-rich personal finance management app for Android
 - **Firebase-First:** All data stored securely in Firebase Realtime Database and Storage 🔒
 - **Real-time Updates:** Instant updates to charts and data as transactions are added or modified
 
+
 ## 📷 Screenshots
 <!-- Add screenshots here -->
 - Dashboard
