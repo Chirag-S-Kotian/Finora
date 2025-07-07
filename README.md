@@ -43,7 +43,6 @@
 
 *CashKeeper is a comprehensive personal finance management application that helps you track income and expenses, visualize spending patterns with beautiful charts, and make informed financial decisions.*
 
-
 </div>
 
 ---
