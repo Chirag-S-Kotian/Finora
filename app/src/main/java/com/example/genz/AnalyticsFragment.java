@@ -249,17 +249,107 @@ public class AnalyticsFragment extends Fragment {
         setPieClickListener();
     }
 
+    private void loadDailyBarChart() {
+        // Aggregate by day for current week (Mon-Sun)
+        List<BarEntry> incomeEntries = new ArrayList<>();
+        List<BarEntry> expenseEntries = new ArrayList<>();
+        String[] days = new String[]{"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+        Map<String, Float> incomeDayTotals = new HashMap<>();
+        Map<String, Float> expenseDayTotals = new HashMap<>();
+        // Get the start of the week (Monday)
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
+        SimpleDateFormat dayFormat = new SimpleDateFormat("EEE", Locale.getDefault());
+        // Build a map of date string for each day in the week
+        Map<String, Integer> dateToIndex = new HashMap<>();
+        List<String> weekDates = new ArrayList<>();
+        for (int i = 0; i < 7; i++) {
+            String dateStr = dateFormat.format(cal.getTime());
+            weekDates.add(dateStr);
+            dateToIndex.put(dateStr, i);
+            cal.add(Calendar.DAY_OF_WEEK, 1);
+        }
+        // Aggregate income/expense for each day
+        for (Data data : incomeList) {
+            try {
+                Date entryDate = dateFormat.parse(data.getDate());
+                for (int i = 0; i < weekDates.size(); i++) {
+                    Date weekDate = dateFormat.parse(weekDates.get(i));
+                    if (entryDate != null && weekDate != null && entryDate.equals(weekDate)) {
+                        String day = days[i];
+                        float amt = data.getAmount();
+                        incomeDayTotals.put(day, incomeDayTotals.getOrDefault(day, 0f) + amt);
+                    }
+                }
+            } catch (ParseException e) { /* skip */ }
+        }
+        for (Data data : expenseList) {
+            try {
+                Date entryDate = dateFormat.parse(data.getDate());
+                for (int i = 0; i < weekDates.size(); i++) {
+                    Date weekDate = dateFormat.parse(weekDates.get(i));
+                    if (entryDate != null && weekDate != null && entryDate.equals(weekDate)) {
+                        String day = days[i];
+                        float amt = data.getAmount();
+                        expenseDayTotals.put(day, expenseDayTotals.getOrDefault(day, 0f) + amt);
+                    }
+                }
+            } catch (ParseException e) { /* skip */ }
+        }
+        boolean hasData = false;
+        for (int i = 0; i < days.length; i++) {
+            String d = days[i];
+            float income = incomeDayTotals.getOrDefault(d, 0f);
+            float expense = expenseDayTotals.getOrDefault(d, 0f);
+            incomeEntries.add(new BarEntry(i, income));
+            expenseEntries.add(new BarEntry(i, expense));
+            if (income > 0 || expense > 0) hasData = true;
+        }
+        BarDataSet incomeDataSet = new BarDataSet(incomeEntries, "Income");
+        incomeDataSet.setColor(Color.parseColor("#2196f3"));
+        BarDataSet expenseDataSet = new BarDataSet(expenseEntries, "Expense");
+        expenseDataSet.setColor(Color.parseColor("#f44336"));
+        BarData data = new BarData(incomeDataSet, expenseDataSet);
+        data.setBarWidth(0.4f);
+        barChart.setData(data);
+        barChart.groupBars(0f, 0.2f, 0.02f);
+        XAxis xAxis = barChart.getXAxis();
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(days));
+        xAxis.setGranularity(1f);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawGridLines(false);
+        xAxis.setCenterAxisLabels(true);
+        xAxis.setAxisMinimum(0f);
+        xAxis.setAxisMaximum(days.length);
+        barChart.getAxisLeft().setAxisMinimum(0f);
+        barChart.getAxisRight().setEnabled(false);
+        barChart.setFitBars(true);
+        barChart.getDescription().setEnabled(false);
+        barChart.getLegend().setEnabled(true);
+        barChart.invalidate();
+        // Show/hide empty state
+        TextView emptyText = getView().findViewById(R.id.barChartEmptyText);
+        if (emptyText != null) emptyText.setVisibility(hasData ? View.GONE : View.VISIBLE);
+    }
+
     private void loadDailyPieChart() {
-        // Aggregate EXPENSE by category for today
+        // Show category breakdown for today only
         latestPieEntries.clear();
         Map<String, Float> categoryTotals = new HashMap<>();
-        SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
-        String todayStr = sdf.format(new Date());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
+        String todayStr = dateFormat.format(new Date());
+        boolean hasData = false;
         for (Data data : expenseList) {
             if (todayStr.equals(data.getDate())) {
                 String cat = data.getType();
                 float amt = data.getAmount();
                 categoryTotals.put(cat, categoryTotals.getOrDefault(cat, 0f) + amt);
+                hasData = true;
             }
         }
         for (Map.Entry<String, Float> entry : categoryTotals.entrySet()) {
@@ -274,7 +364,11 @@ public class AnalyticsFragment extends Fragment {
         pieChart.setDrawHoleEnabled(true);
         pieChart.setHoleRadius(40f);
         pieChart.setHoleColor(Color.TRANSPARENT);
-        pieChart.setCenterText("Daily Spending");
+        if (hasData) {
+            pieChart.setCenterText("Today's Spending");
+        } else {
+            pieChart.setCenterText("No expenses today");
+        }
         pieChart.setCenterTextSize(18f);
         pieChart.setEntryLabelColor(Color.BLACK);
         pieChart.setEntryLabelTextSize(12f);
@@ -288,6 +382,16 @@ public class AnalyticsFragment extends Fragment {
         }
         updateTotalSpent(total);
         setPieClickListener();
+        // Show/hide empty state
+        TextView emptyText = getView().findViewById(R.id.pieChartEmptyText);
+        if (emptyText != null) {
+            if (hasData) {
+                emptyText.setVisibility(View.GONE);
+            } else {
+                emptyText.setText("No expenses today");
+                emptyText.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
     private void loadMonthlyBarChart() {
@@ -352,69 +456,6 @@ public class AnalyticsFragment extends Fragment {
         xAxis.setCenterAxisLabels(true);
         xAxis.setAxisMinimum(0f);
         xAxis.setAxisMaximum(months.size());
-        barChart.getAxisLeft().setAxisMinimum(0f);
-        barChart.getAxisRight().setEnabled(false);
-        barChart.setFitBars(true);
-        barChart.getDescription().setEnabled(false);
-        barChart.getLegend().setEnabled(true);
-        barChart.invalidate();
-    }
-
-    private void loadDailyBarChart() {
-        // Aggregate by day for current week (Mon-Sun)
-        List<BarEntry> incomeEntries = new ArrayList<>();
-        List<BarEntry> expenseEntries = new ArrayList<>();
-        String[] days = new String[]{"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
-        Map<String, Float> incomeDayTotals = new HashMap<>();
-        Map<String, Float> expenseDayTotals = new HashMap<>();
-        SimpleDateFormat sdf = new SimpleDateFormat("EEE", Locale.getDefault());
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-        Date weekStart = cal.getTime();
-        cal.add(Calendar.DAY_OF_WEEK, 6);
-        Date weekEnd = cal.getTime();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
-        for (Data data : incomeList) {
-            try {
-                Date entryDate = dateFormat.parse(data.getDate());
-                if (entryDate != null && !entryDate.before(weekStart) && !entryDate.after(weekEnd)) {
-                    String day = sdf.format(entryDate);
-                    float amt = data.getAmount();
-                    incomeDayTotals.put(day, incomeDayTotals.getOrDefault(day, 0f) + amt);
-                }
-            } catch (ParseException e) { /* skip */ }
-        }
-        for (Data data : expenseList) {
-            try {
-                Date entryDate = dateFormat.parse(data.getDate());
-                if (entryDate != null && !entryDate.before(weekStart) && !entryDate.after(weekEnd)) {
-                    String day = sdf.format(entryDate);
-                    float amt = data.getAmount();
-                    expenseDayTotals.put(day, expenseDayTotals.getOrDefault(day, 0f) + amt);
-                }
-            } catch (ParseException e) { /* skip */ }
-        }
-        for (int i = 0; i < days.length; i++) {
-            String d = days[i];
-            incomeEntries.add(new BarEntry(i, incomeDayTotals.getOrDefault(d, 0f)));
-            expenseEntries.add(new BarEntry(i, expenseDayTotals.getOrDefault(d, 0f)));
-        }
-        BarDataSet incomeDataSet = new BarDataSet(incomeEntries, "Income");
-        incomeDataSet.setColor(Color.parseColor("#2196f3"));
-        BarDataSet expenseDataSet = new BarDataSet(expenseEntries, "Expense");
-        expenseDataSet.setColor(Color.parseColor("#f44336"));
-        BarData data = new BarData(incomeDataSet, expenseDataSet);
-        data.setBarWidth(0.4f);
-        barChart.setData(data);
-        barChart.groupBars(0f, 0.2f, 0.02f);
-        XAxis xAxis = barChart.getXAxis();
-        xAxis.setValueFormatter(new IndexAxisValueFormatter(days));
-        xAxis.setGranularity(1f);
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setDrawGridLines(false);
-        xAxis.setCenterAxisLabels(true);
-        xAxis.setAxisMinimum(0f);
-        xAxis.setAxisMaximum(days.length);
         barChart.getAxisLeft().setAxisMinimum(0f);
         barChart.getAxisRight().setEnabled(false);
         barChart.setFitBars(true);
