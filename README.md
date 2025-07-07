@@ -94,7 +94,6 @@ app/src/main/java/com/example/genz/
 ├── Model/Data.java             # Transaction data model
 └── ... (other utility/activity files)
 
-
 app/src/main/res/values/
 app/src/main/res/layout/
 ├── activity_about.xml              # About page layout
