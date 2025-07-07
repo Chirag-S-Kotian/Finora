@@ -77,6 +77,7 @@ CashKeeper is designed to help you manage your finances effortlessly, with a foc
 
 ## 🗂️ Project Structure
 
+
 ```
 app/src/main/java/com/example/genz/
 ├── AnalyticsFragment.java      # Analytics page, income/expense bar charts
