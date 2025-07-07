@@ -338,19 +338,40 @@ public class AnalyticsFragment extends Fragment {
     }
 
     private void loadDailyPieChart() {
-        // Show category breakdown for today only
+        // Show category breakdown for today only (robust date matching)
         latestPieEntries.clear();
         Map<String, Float> categoryTotals = new HashMap<>();
         SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
-        String todayStr = dateFormat.format(new Date());
+        Date today = new Date();
         boolean hasData = false;
+        int totalEntries = expenseList.size();
+        int matchedEntries = 0;
         for (Data data : expenseList) {
-            if (todayStr.equals(data.getDate())) {
-                String cat = data.getType();
-                float amt = data.getAmount();
-                categoryTotals.put(cat, categoryTotals.getOrDefault(cat, 0f) + amt);
-                hasData = true;
-            }
+            try {
+                Date entryDate = dateFormat.parse(data.getDate());
+                // Compare only the date part (ignore time)
+                if (entryDate != null) {
+                    Calendar cal1 = Calendar.getInstance();
+                    cal1.setTime(today);
+                    cal1.set(Calendar.HOUR_OF_DAY, 0);
+                    cal1.set(Calendar.MINUTE, 0);
+                    cal1.set(Calendar.SECOND, 0);
+                    cal1.set(Calendar.MILLISECOND, 0);
+                    Calendar cal2 = Calendar.getInstance();
+                    cal2.setTime(entryDate);
+                    cal2.set(Calendar.HOUR_OF_DAY, 0);
+                    cal2.set(Calendar.MINUTE, 0);
+                    cal2.set(Calendar.SECOND, 0);
+                    cal2.set(Calendar.MILLISECOND, 0);
+                    if (cal1.getTime().equals(cal2.getTime())) {
+                        String cat = data.getType();
+                        float amt = data.getAmount();
+                        categoryTotals.put(cat, categoryTotals.getOrDefault(cat, 0f) + amt);
+                        hasData = true;
+                        matchedEntries++;
+                    }
+                }
+            } catch (ParseException e) { /* skip */ }
         }
         for (Map.Entry<String, Float> entry : categoryTotals.entrySet()) {
             latestPieEntries.add(new PieEntry(entry.getValue(), entry.getKey()));
@@ -392,6 +413,8 @@ public class AnalyticsFragment extends Fragment {
                 emptyText.setVisibility(View.VISIBLE);
             }
         }
+        // Debug log
+        android.util.Log.d("AnalyticsFragment", "PieChart: total expense entries=" + totalEntries + ", matched today=" + matchedEntries + ", today=" + dateFormat.format(today));
     }
 
     private void loadMonthlyBarChart() {
