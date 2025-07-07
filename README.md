@@ -26,7 +26,6 @@
   <img src="https://img.shields.io/badge/Gradle-7.2-02303A?style=for-the-badge&logo=gradle&logoColor=white" alt="Gradle">
 </p>
 
-
 <p align="center">
   <a href="#features">Features</a> •
   <a href="#screenshots">Screenshots</a> •
