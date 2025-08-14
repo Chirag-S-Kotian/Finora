@@ -103,9 +103,19 @@ public class first_home_page extends AppCompatActivity implements NavigationView
         ValueEventListener valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String userEmail = dataSnapshot.child("Email").getValue().toString();
-                TextView email=findViewById(R.id.user_email);
-                email.setText(userEmail);
+                // Safely read Email field to avoid NullPointerException
+                String userEmail = "";
+                DataSnapshot emailSnap = dataSnapshot.child("Email");
+                if (emailSnap != null && emailSnap.getValue() != null) {
+                    userEmail = emailSnap.getValue().toString();
+                } else {
+                    android.util.Log.w("first_home_page", "User email missing for uid=" + uid + " snapshot=" + dataSnapshot);
+                    userEmail = "(no email)";
+                }
+                TextView email = findViewById(R.id.user_email);
+                if (email != null) {
+                    email.setText(userEmail);
+                }
             }
 
             @Override
