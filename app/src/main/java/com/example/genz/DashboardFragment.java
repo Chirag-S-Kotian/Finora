@@ -376,6 +376,13 @@ public class DashboardFragment extends Fragment {
 
         EditText edtAmount=myviewm.findViewById(R.id.amount_edt);
         EditText edtType=myviewm.findViewById(R.id.type_edt);
+        Spinner typeSpinner = myviewm.findViewById(R.id.type_spinner);
+        if (typeSpinner != null) {
+            typeSpinner.setVisibility(View.VISIBLE);
+            String[] incomeCategories = new String[]{"Salary", "Business", "Investment", "Gift", "Other"};
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item, incomeCategories);
+            typeSpinner.setAdapter(adapter);
+        }
         EditText edtNote=myviewm.findViewById(R.id.note_edt);
 
         Button btnSave=myviewm.findViewById(R.id.btnSave);
@@ -389,18 +396,33 @@ public class DashboardFragment extends Fragment {
                 String note=edtNote.getText().toString().trim();
 
                 if(TextUtils.isEmpty(amount)){
-                    edtAmount.setError("Required Field..");
+                    edtAmount.setError("Amount is required");
                     return;
                 }
-                int ouramountint=Integer.parseInt(amount);
+                int ouramountint;
+                try {
+                    ouramountint = Integer.parseInt(amount);
+                    if (ouramountint <= 0) {
+                        edtAmount.setError("Enter a positive amount");
+                        return;
+                    }
+                } catch (NumberFormatException e) {
+                    edtAmount.setError("Enter a valid number");
+                    return;
+                }
                 if(TextUtils.isEmpty(type)){
-                    edtType.setError("Required Field..");
-                    return;
+                    if (typeSpinner != null && typeSpinner.getSelectedItem() != null) {
+                        type = typeSpinner.getSelectedItem().toString();
+                    } else {
+                        edtType.setError("Type is required");
+                        return;
+                    }
                 }
-                if(TextUtils.isEmpty(note)){
-                    edtNote.setError("Required Field..");
-                    return;
-                }
+                // Note is optional; remove below block if required
+                // if(TextUtils.isEmpty(note)){
+                //     edtNote.setError("Required Field..");
+                //     return;
+                // }
 
                 if(mAuth.getCurrentUser()!=null) {
                     String id = mIncomeDatabase.push().getKey();
@@ -436,6 +458,13 @@ public class DashboardFragment extends Fragment {
 
         EditText edtAmount=myviewm.findViewById(R.id.amount_edt);
         EditText edtType=myviewm.findViewById(R.id.type_edt);
+        Spinner typeSpinner = myviewm.findViewById(R.id.type_spinner);
+        if (typeSpinner != null) {
+            typeSpinner.setVisibility(View.VISIBLE);
+            String[] expenseCategories = new String[]{"Food", "Transport", "Shopping", "Bills", "Other"};
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item, expenseCategories);
+            typeSpinner.setAdapter(adapter);
+        }
         EditText edtNote=myviewm.findViewById(R.id.note_edt);
 
         Button btnSave=myviewm.findViewById(R.id.btnSave);
@@ -449,18 +478,33 @@ public class DashboardFragment extends Fragment {
                 String note=edtNote.getText().toString().trim();
 
                 if(TextUtils.isEmpty(amount)){
-                    edtAmount.setError("Required Field..");
+                    edtAmount.setError("Amount is required");
                     return;
                 }
-                int ouramountinte=Integer.parseInt(amount);
+                int ouramountinte;
+                try {
+                    ouramountinte = Integer.parseInt(amount);
+                    if (ouramountinte <= 0) {
+                        edtAmount.setError("Enter a positive amount");
+                        return;
+                    }
+                } catch (NumberFormatException e) {
+                    edtAmount.setError("Enter a valid number");
+                    return;
+                }
                 if(TextUtils.isEmpty(type)){
-                    edtType.setError("Required Field..");
-                    return;
+                    if (typeSpinner != null && typeSpinner.getSelectedItem() != null) {
+                        type = typeSpinner.getSelectedItem().toString();
+                    } else {
+                        edtType.setError("Type is required");
+                        return;
+                    }
                 }
-                if(TextUtils.isEmpty(note)){
-                    edtNote.setError("Required Field..");
-                    return;
-                }
+                // Note is optional; remove below block if required
+                // if(TextUtils.isEmpty(note)){
+                //     edtNote.setError("Required Field..");
+                //     return;
+                // }
                 if(mAuth.getCurrentUser()!=null) {
                     String id = mExpenseDatabase.push().getKey();
                     String mDate = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(new Date());
