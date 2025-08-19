@@ -21,6 +21,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.FirebaseNetworkException;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 
 public class home_screen extends AppCompatActivity {
     private EditText mEmail;
@@ -98,29 +102,45 @@ public class home_screen extends AppCompatActivity {
                         } else {
                             String errorMsg = "Login failed.";
                             Exception ex = task.getException();
-                            if (ex != null) {
-                                String msg = ex.getMessage();
-                                if (msg != null) {
-                                    if (msg.contains("There is no user record")) {
-                                        errorMsg = "No account found with this email.";
-                                        mEmail.setError(errorMsg);
-                                        mEmail.requestFocus();
-                                    } else if (msg.contains("The password is invalid")) {
-                                        errorMsg = "Incorrect password.";
-                                        mPass.setError(errorMsg);
-                                        mPass.requestFocus();
-                                    } else if (msg.contains("The email address is badly formatted")) {
-                                        errorMsg = "Invalid email format.";
-                                        mEmail.setError(errorMsg);
-                                        mEmail.requestFocus();
-                                    } else if (msg.contains("A network error")) {
-                                        errorMsg = "Network error. Please check your connection.";
-                                    } else if (msg.contains("blocked all requests from this device")) {
-                                        errorMsg = "Too many failed attempts. Try again later.";
-                                    } else {
-                                        errorMsg = msg;
-                                    }
+                            if (ex instanceof FirebaseAuthInvalidUserException) {
+                                String code = ((FirebaseAuthInvalidUserException) ex).getErrorCode();
+                                if ("ERROR_USER_DISABLED".equals(code)) {
+                                    errorMsg = "This account has been disabled.";
+                                } else if ("ERROR_USER_NOT_FOUND".equals(code)) {
+                                    errorMsg = "User not found. Please register first.";
+                                    mEmail.setError(errorMsg);
+                                    mEmail.requestFocus();
+                                } else {
+                                    errorMsg = "No account found with this email.";
+                                    mEmail.setError(errorMsg);
+                                    mEmail.requestFocus();
                                 }
+                            } else if (ex instanceof FirebaseAuthInvalidCredentialsException) {
+                                String code = ((FirebaseAuthInvalidCredentialsException) ex).getErrorCode();
+                                if ("ERROR_INVALID_EMAIL".equals(code)) {
+                                    errorMsg = "Invalid email format.";
+                                    mEmail.setError(errorMsg);
+                                    mEmail.requestFocus();
+                                } else if ("ERROR_WRONG_PASSWORD".equals(code)) {
+                                    errorMsg = "Wrong password. Please try again.";
+                                    mPass.setError(errorMsg);
+                                    mPass.requestFocus();
+                                } else if ("ERROR_INVALID_LOGIN_CREDENTIALS".equals(code)) {
+                                    errorMsg = "Email or password is incorrect.";
+                                } else {
+                                    errorMsg = ex.getMessage() != null ? ex.getMessage() : errorMsg;
+                                }
+                            } else if (ex instanceof FirebaseNetworkException) {
+                                errorMsg = "Network error. Please check your connection.";
+                            } else if (ex instanceof FirebaseAuthException) {
+                                String code = ((FirebaseAuthException) ex).getErrorCode();
+                                if ("ERROR_TOO_MANY_REQUESTS".equals(code)) {
+                                    errorMsg = "Too many failed attempts. Try again later.";
+                                } else {
+                                    errorMsg = ex.getMessage() != null ? ex.getMessage() : errorMsg;
+                                }
+                            } else if (ex != null && ex.getMessage() != null) {
+                                errorMsg = ex.getMessage();
                             }
                             Toast.makeText(home_screen.this, errorMsg, Toast.LENGTH_LONG).show();
                         }
