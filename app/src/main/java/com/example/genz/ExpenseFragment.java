@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Spinner;
+import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -110,6 +112,11 @@ public class ExpenseFragment extends Fragment {
 
         EditText edtAmount = dialogView.findViewById(R.id.amount_edt);
         EditText edtType = dialogView.findViewById(R.id.type_edt);
+        Spinner typeSpinner = dialogView.findViewById(R.id.type_spinner);
+        typeSpinner.setVisibility(View.VISIBLE);
+        String[] categories = new String[]{"Food", "Transport", "Shopping", "Bills", "Other"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item, categories);
+        typeSpinner.setAdapter(adapter);
         EditText edtNote = dialogView.findViewById(R.id.note_edt);
         Button btnUpdate = dialogView.findViewById(R.id.btn_upd_Update);
         Button btnDelete = dialogView.findViewById(R.id.btnuPD_Delete);
@@ -120,6 +127,9 @@ public class ExpenseFragment extends Fragment {
         btnUpdate.setOnClickListener(v -> {
             String amountStr = edtAmount.getText().toString().trim();
             String typeStr = edtType.getText().toString().trim();
+            if (typeStr.isEmpty()) {
+                typeStr = typeSpinner.getSelectedItem() != null ? typeSpinner.getSelectedItem().toString() : "Other";
+            }
             String noteStr = edtNote.getText().toString().trim();
             if (amountStr.isEmpty() || typeStr.isEmpty()) {
                 if (edtAmount.getText().toString().trim().isEmpty()) edtAmount.setError("Required");
