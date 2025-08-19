@@ -18,6 +18,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.FirebaseNetworkException;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -98,27 +101,30 @@ public class Registration extends AppCompatActivity {
                         } else {
                             String errorMsg = "Registration failed.";
                             Exception ex = task.getException();
-                            if (ex != null) {
-                                String msg = ex.getMessage();
-                                if (msg != null) {
-                                    if (msg.contains("The email address is already in use")) {
-                                        errorMsg = "This email is already registered. Please login or use a different email.";
-                                        mEmail.setError(errorMsg);
-                                        mEmail.requestFocus();
-                                    } else if (msg.contains("The given password is invalid")) {
-                                        errorMsg = "Password is too weak. Please use at least 6 characters.";
-                                        mPass.setError(errorMsg);
-                                        mPass.requestFocus();
-                                    } else if (msg.contains("The email address is badly formatted")) {
-                                        errorMsg = "Invalid email format.";
-                                        mEmail.setError(errorMsg);
-                                        mEmail.requestFocus();
-                                    } else if (msg.contains("A network error")) {
-                                        errorMsg = "Network error. Please check your connection.";
-                                    } else {
-                                        errorMsg = msg;
-                                    }
+                            if (ex instanceof FirebaseAuthInvalidCredentialsException) {
+                                String code = ((FirebaseAuthInvalidCredentialsException) ex).getErrorCode();
+                                if ("ERROR_INVALID_EMAIL".equals(code)) {
+                                    errorMsg = "Invalid email format.";
+                                    mEmail.setError(errorMsg);
+                                    mEmail.requestFocus();
+                                } else {
+                                    errorMsg = "Password is too weak. Please use at least 6 characters.";
+                                    mPass.setError(errorMsg);
+                                    mPass.requestFocus();
                                 }
+                            } else if (ex instanceof FirebaseAuthException) {
+                                String code = ((FirebaseAuthException) ex).getErrorCode();
+                                if ("ERROR_EMAIL_ALREADY_IN_USE".equals(code)) {
+                                    errorMsg = "This email is already registered. Please login or use a different email.";
+                                    mEmail.setError(errorMsg);
+                                    mEmail.requestFocus();
+                                } else {
+                                    errorMsg = ex.getMessage() != null ? ex.getMessage() : errorMsg;
+                                }
+                            } else if (ex instanceof FirebaseNetworkException) {
+                                errorMsg = "Network error. Please check your connection.";
+                            } else if (ex != null && ex.getMessage() != null) {
+                                errorMsg = ex.getMessage();
                             }
                             Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_LONG).show();
                         }
