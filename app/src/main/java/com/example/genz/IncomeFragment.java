@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Spinner;
+import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -98,6 +100,11 @@ public class IncomeFragment extends Fragment {
         });
 
 
+        View fab = myview.findViewById(R.id.fab_add_income);
+        if (fab != null) {
+            fab.setOnClickListener(v -> showAddIncomeDialog());
+        }
+
         return  myview;
     }
 
@@ -135,6 +142,48 @@ public class IncomeFragment extends Fragment {
             }
         };
         recyclerView.setAdapter(adapter);
+    }
+
+    private void showAddIncomeDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = LayoutInflater.from(getActivity());
+        View dialogView = inflater.inflate(R.layout.update_data_item, null);
+        builder.setView(dialogView);
+
+        EditText edtAmount = dialogView.findViewById(R.id.amount_edt);
+        EditText edtType = dialogView.findViewById(R.id.type_edt);
+        Spinner typeSpinner = dialogView.findViewById(R.id.type_spinner);
+        EditText edtNote = dialogView.findViewById(R.id.note_edt);
+        Button btnUpdate = dialogView.findViewById(R.id.btn_upd_Update);
+        Button btnDelete = dialogView.findViewById(R.id.btnuPD_Delete);
+        btnDelete.setVisibility(View.GONE);
+        btnUpdate.setText("Add");
+
+        typeSpinner.setVisibility(View.VISIBLE);
+        String[] categories = new String[]{"Salary", "Business", "Investment", "Gift", "Other"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item, categories);
+        typeSpinner.setAdapter(adapter);
+
+        AlertDialog dialog = builder.create();
+        btnUpdate.setOnClickListener(v -> {
+            String amountStr = edtAmount.getText().toString().trim();
+            String typeStr = edtType.getText().toString().trim();
+            String noteStr = edtNote.getText().toString().trim();
+            if (amountStr.isEmpty()) {
+                edtAmount.setError("Required");
+                return;
+            }
+            if (typeStr.isEmpty()) {
+                typeStr = typeSpinner.getSelectedItem() != null ? typeSpinner.getSelectedItem().toString() : "Other";
+            }
+            int amount = Integer.parseInt(amountStr);
+            String id = mIncomeDatabase.push().getKey();
+            String date = java.text.DateFormat.getDateInstance().format(new java.util.Date());
+            Data data = new Data(amount, typeStr, noteStr, id, date);
+            mIncomeDatabase.child(id).setValue(data);
+            dialog.dismiss();
+        });
+        dialog.show();
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder{
