@@ -13,6 +13,8 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.FirebaseNetworkException;
+import com.google.firebase.auth.FirebaseAuthException;
 
 public class resetpassword extends AppCompatActivity {
     private EditText passwordEmail;
@@ -48,13 +50,33 @@ public class resetpassword extends AppCompatActivity {
                         public void onComplete(@NonNull Task<Void> task) {
                             if(task.isSuccessful())
                             {
-                                Toast.makeText(resetpassword.this,"Email sent successfully..",Toast.LENGTH_LONG).show();
+                                Toast.makeText(resetpassword.this,"Password reset email sent. Check your inbox.",Toast.LENGTH_LONG).show();
                                 finish();
                                 startActivity(new Intent(resetpassword.this,home_screen.class));
                             }
                             else
                             {
-                                Toast.makeText(resetpassword.this,"Error sending email..",Toast.LENGTH_SHORT).show();
+                                String errorMsg = "Error sending reset email.";
+                                Exception ex = task.getException();
+                                if (ex instanceof FirebaseAuthException) {
+                                    String code = ((FirebaseAuthException) ex).getErrorCode();
+                                    if ("ERROR_INVALID_EMAIL".equals(code)) {
+                                        errorMsg = "Invalid email format.";
+                                        passwordEmail.setError(errorMsg, null);
+                                        passwordEmail.requestFocus();
+                                    } else if ("ERROR_USER_NOT_FOUND".equals(code)) {
+                                        errorMsg = "No account found with this email.";
+                                        passwordEmail.setError(errorMsg, null);
+                                        passwordEmail.requestFocus();
+                                    } else {
+                                        errorMsg = ex.getMessage() != null ? ex.getMessage() : errorMsg;
+                                    }
+                                } else if (ex instanceof FirebaseNetworkException) {
+                                    errorMsg = "Network error. Please check your connection.";
+                                } else if (ex != null && ex.getMessage() != null) {
+                                    errorMsg = ex.getMessage();
+                                }
+                                Toast.makeText(resetpassword.this,errorMsg,Toast.LENGTH_LONG).show();
                             }
                         }
                     });
