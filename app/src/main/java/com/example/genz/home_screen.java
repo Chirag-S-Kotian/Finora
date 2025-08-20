@@ -25,8 +25,11 @@ import com.google.firebase.FirebaseNetworkException;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
+import java.util.regex.Pattern;
 
 public class home_screen extends AppCompatActivity {
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
+    private static final Pattern PASSWORD_PATTERN = Pattern.compile("^(?=\\S+$)(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&#^()_+\\-={}\\[\\]|:;\"'<>.,/~`]).{8,}$");
     private EditText mEmail;
     private EditText mPass;
     private CheckBox remember;
@@ -73,7 +76,7 @@ public class home_screen extends AppCompatActivity {
                     Toast.makeText(home_screen.this, "Please enter your email.", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                if (!EMAIL_PATTERN.matcher(email).matches()) {
                     mEmail.setError("Enter a valid email address.");
                     mEmail.requestFocus();
                     Toast.makeText(home_screen.this, "Invalid email format.", Toast.LENGTH_SHORT).show();
@@ -85,10 +88,10 @@ public class home_screen extends AppCompatActivity {
                     Toast.makeText(home_screen.this, "Please enter your password.", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if (pass.length() < 6) {
-                    mPass.setError("Password must be at least 6 characters.");
+                if (!PASSWORD_PATTERN.matcher(pass).matches()) {
+                    mPass.setError("Password must be 8+ chars with upper, lower, digit, and special character, and no spaces.");
                     mPass.requestFocus();
-                    Toast.makeText(home_screen.this, "Password too short.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(home_screen.this, "Weak password.", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 mDialog.setMessage("Logging in...");
