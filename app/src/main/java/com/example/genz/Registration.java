@@ -23,8 +23,11 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import java.util.regex.Pattern;
 
 public class Registration extends AppCompatActivity {
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
+    private static final Pattern PASSWORD_PATTERN = Pattern.compile("^(?=\\S+$)(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&#^()_+\\-={}\\[\\]|:;\"'<>.,/~`]).{8,}$");
     private EditText mEmail;
     private EditText mPass;
     private Button btnReg;
@@ -69,7 +72,7 @@ public class Registration extends AppCompatActivity {
                     mEmail.requestFocus();
                     return;
                 }
-                if(!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+                if(!EMAIL_PATTERN.matcher(email).matches()){
                     mEmail.setError("Enter a valid email address.");
                     mEmail.requestFocus();
                     return;
@@ -79,8 +82,8 @@ public class Registration extends AppCompatActivity {
                     mPass.requestFocus();
                     return;
                 }
-                if(pass.length()<6){
-                    mPass.setError("Password must be at least 6 characters.");
+                if(!PASSWORD_PATTERN.matcher(pass).matches()){
+                    mPass.setError("Password must be 8+ chars with upper, lower, digit, and special character, and no spaces.");
                     mPass.requestFocus();
                     return;
                 }
