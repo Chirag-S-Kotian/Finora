@@ -50,6 +50,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.Query;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -115,6 +116,9 @@ public class DashboardFragment extends Fragment {
 
             mIncomeDatabase = FirebaseDatabase.getInstance().getReference().child("IncomeData").child(uid);
             mExpenseDatabase = FirebaseDatabase.getInstance().getReference().child("ExpenseData").child(uid);
+            // Speed: enable local cache sync for these paths
+            mIncomeDatabase.keepSynced(true);
+            mExpenseDatabase.keepSynced(true);
         }
 
 
@@ -206,7 +210,9 @@ public class DashboardFragment extends Fragment {
             }
         });
 
-        mExpenseDatabase.addValueEventListener(new ValueEventListener() {
+        // Limit totals to recent entries to reduce initial load
+        final Query expenseTotalsQuery = mExpenseDatabase.orderByChild("date").limitToLast(180);
+        expenseTotalsQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
@@ -234,7 +240,8 @@ public class DashboardFragment extends Fragment {
 
         //calc total income
 
-        mIncomeDatabase.addValueEventListener(new ValueEventListener() {
+        final Query incomeTotalsQuery = mIncomeDatabase.orderByChild("date").limitToLast(180);
+        incomeTotalsQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
@@ -530,12 +537,13 @@ public class DashboardFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
+        Query incomeListQuery = mIncomeDatabase.orderByChild("date").limitToLast(50);
         FirebaseRecyclerAdapter<Data,IncomeViewHolder>incomeAdapter=new FirebaseRecyclerAdapter<Data, IncomeViewHolder>
                 (
                         Data.class,
                         R.layout.dashboard_income,
                         DashboardFragment.IncomeViewHolder.class,
-                        mIncomeDatabase
+                        incomeListQuery
                 ) {
             @Override
             protected void populateViewHolder(IncomeViewHolder incomeViewHolder, Data model, int position) {
@@ -546,8 +554,9 @@ public class DashboardFragment extends Fragment {
         };
         mRecyclerIncome.setAdapter(incomeAdapter);
 
+        Query expenseListQuery = mExpenseDatabase.orderByChild("date").limitToLast(50);
         FirebaseRecyclerAdapter<Data,ExpenseViewHolder>expenseAdapter=new FirebaseRecyclerAdapter<Data, ExpenseViewHolder>
-                (Data.class,R.layout.dashboard_expense,DashboardFragment.ExpenseViewHolder.class,mExpenseDatabase) {
+                (Data.class,R.layout.dashboard_expense,DashboardFragment.ExpenseViewHolder.class,expenseListQuery) {
             @Override
             protected void populateViewHolder(ExpenseViewHolder expenseViewHolder, Data data, int i) {
 

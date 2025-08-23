@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -100,6 +101,8 @@ public class first_home_page extends AppCompatActivity implements NavigationView
         }
         String uid = mUser.getUid();
         DatabaseReference mUserInfoDatabase = FirebaseDatabase.getInstance().getReference().child("UserInfo").child(uid);
+        // Use the header view of NavigationView to update the email text
+        final NavigationView navViewRef = navigationView;
         ValueEventListener valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -112,9 +115,14 @@ public class first_home_page extends AppCompatActivity implements NavigationView
                     android.util.Log.w("first_home_page", "User email missing for uid=" + uid + " snapshot=" + dataSnapshot);
                     userEmail = "(no email)";
                 }
-                TextView email = findViewById(R.id.user_email);
-                if (email != null) {
-                    email.setText(userEmail);
+                if (navViewRef != null) {
+                    View header = navViewRef.getHeaderView(0);
+                    if (header != null) {
+                        TextView email = header.findViewById(R.id.user_email);
+                        if (email != null) {
+                            email.setText(userEmail);
+                        }
+                    }
                 }
             }
 
