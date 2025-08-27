@@ -392,6 +392,10 @@ public class DashboardFragment extends Fragment {
         EditText edtAmount=myviewm.findViewById(R.id.amount_edt);
         EditText edtType=myviewm.findViewById(R.id.type_edt);
         Spinner typeSpinner = myviewm.findViewById(R.id.type_spinner);
+        // Input constraints
+        final int MAX_INPUT_LENGTH = 12; // applies to amount/type/note text fields
+        edtAmount.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(MAX_INPUT_LENGTH)});
+        edtType.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(MAX_INPUT_LENGTH)});
         if (typeSpinner != null) {
             typeSpinner.setVisibility(View.VISIBLE);
             String[] incomeCategories = new String[]{"Salary", "Business", "Investment", "Freelance", "Interest", "Rent", "Dividends", "Gift", "Refunds", "Other"};
@@ -399,16 +403,41 @@ public class DashboardFragment extends Fragment {
             typeSpinner.setAdapter(adapter);
         }
         EditText edtNote=myviewm.findViewById(R.id.note_edt);
+        edtNote.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(40)});
 
         Button btnSave=myviewm.findViewById(R.id.btnSave);
         Button btnCancel=myviewm.findViewById(R.id.btnCancel);
+        // Disable save until valid
+        btnSave.setEnabled(false);
+
+        android.text.TextWatcher watcher = new android.text.TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override public void afterTextChanged(android.text.Editable s) {
+                String amountTxt = edtAmount.getText().toString().trim();
+                String typeTxt = edtType.getText().toString().trim();
+                boolean hasSpinnerType = typeSpinner != null && typeSpinner.getSelectedItem() != null;
+                boolean amountValid = false;
+                try { amountValid = Integer.parseInt(amountTxt) > 0; } catch (Exception ignored) {}
+                boolean typeValid = (!typeTxt.isEmpty()) || hasSpinnerType;
+                btnSave.setEnabled(amountValid && typeValid);
+            }
+        };
+        edtAmount.addTextChangedListener(watcher);
+        edtType.addTextChangedListener(watcher);
+        if (typeSpinner != null) {
+            typeSpinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+                @Override public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) { watcher.afterTextChanged(null); }
+                @Override public void onNothingSelected(android.widget.AdapterView<?> parent) { watcher.afterTextChanged(null); }
+            });
+        }
 
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String type=edtType.getText().toString().trim();
+                String type=edtType.getText().toString().trim().replaceAll("\\s+"," ");
                 String amount=edtAmount.getText().toString().trim();
-                String note=edtNote.getText().toString().trim();
+                String note=edtNote.getText().toString().trim().replaceAll("\\s+"," ");
 
                 if(TextUtils.isEmpty(amount)){
                     edtAmount.setError("Amount is required");
@@ -523,6 +552,9 @@ public class DashboardFragment extends Fragment {
         EditText edtAmount=myviewm.findViewById(R.id.amount_edt);
         EditText edtType=myviewm.findViewById(R.id.type_edt);
         Spinner typeSpinner = myviewm.findViewById(R.id.type_spinner);
+        final int MAX_INPUT_LENGTH = 12; // same constraints as income
+        edtAmount.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(MAX_INPUT_LENGTH)});
+        edtType.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(MAX_INPUT_LENGTH)});
         if (typeSpinner != null) {
             typeSpinner.setVisibility(View.VISIBLE);
             String[] expenseCategories = new String[]{
@@ -533,16 +565,40 @@ public class DashboardFragment extends Fragment {
             typeSpinner.setAdapter(adapter);
         }
         EditText edtNote=myviewm.findViewById(R.id.note_edt);
+        edtNote.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(40)});
 
         Button btnSave=myviewm.findViewById(R.id.btnSave);
         Button btnCancel=myviewm.findViewById(R.id.btnCancel);
+        btnSave.setEnabled(false);
+
+        android.text.TextWatcher watcher = new android.text.TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override public void afterTextChanged(android.text.Editable s) {
+                String amountTxt = edtAmount.getText().toString().trim();
+                String typeTxt = edtType.getText().toString().trim();
+                boolean hasSpinnerType = typeSpinner != null && typeSpinner.getSelectedItem() != null;
+                boolean amountValid = false;
+                try { amountValid = Integer.parseInt(amountTxt) > 0; } catch (Exception ignored) {}
+                boolean typeValid = (!typeTxt.isEmpty()) || hasSpinnerType;
+                btnSave.setEnabled(amountValid && typeValid);
+            }
+        };
+        edtAmount.addTextChangedListener(watcher);
+        edtType.addTextChangedListener(watcher);
+        if (typeSpinner != null) {
+            typeSpinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+                @Override public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) { watcher.afterTextChanged(null); }
+                @Override public void onNothingSelected(android.widget.AdapterView<?> parent) { watcher.afterTextChanged(null); }
+            });
+        }
 
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String type=edtType.getText().toString().trim();
+                String type=edtType.getText().toString().trim().replaceAll("\\s+"," ");
                 String amount=edtAmount.getText().toString().trim();
-                String note=edtNote.getText().toString().trim();
+                String note=edtNote.getText().toString().trim().replaceAll("\\s+"," ");
 
                 if(TextUtils.isEmpty(amount)){
                     edtAmount.setError("Amount is required");
