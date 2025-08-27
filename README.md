@@ -43,8 +43,18 @@
 ---
 
 ## 🌟 Overview
-CashKeeper is a modern, feature-rich personal finance management app for Android. Track your income, expenses, and analyze your financial trends with a beautiful UI and real-time Firebase integration. Built for speed, clarity, and privacy.
-CashKeeper is designed to help you manage your finances effortlessly, with a focus on user experience and data security. It uses Firebase for authentication, real-time database storage, and cloud storage for profile images. The app features advanced analytics with bar charts, a user-friendly dashboard, and robust error handling to ensure a smooth experience.
+CashKeeper is a modern, feature-rich personal finance management app for Android. Track your income and expenses, visualize spending patterns, and stay on top of your budget with real‑time Firebase sync and a clean Material UI.
+
+### What, Why, How
+- **What**: A lightweight, offline‑tolerant (Firebase cache) app to add/view/search income and expenses, with analytics and a compact dashboard.
+- **Why**: Personal finance tracking should be fast, reliable, and understandable. We optimize for quick entry, date-accurate sorting, and clear summaries.
+- **How**: Firebase Auth + Realtime Database, MPAndroidChart, and a modular Android UI. We store both a human‑readable `date` and a sortable `timestamp` for correct ordering. Category totals are updated atomically using Firebase Transactions for consistency.
+
+### Recent Enhancements (2025-08)
+- Added `timestamp` to every transaction and switched dashboard queries to `orderByChild("timestamp")` for true date-wise sorting.
+- Category accumulation: each add updates `/IncomeCategoryTotals/{uid}/{category}` and `/ExpenseCategoryTotals/{uid}/{category}` atomically.
+- Faster dashboard reads (scoped queries, local cache) and resilient inserts (success/failure listeners + toasts).
+- Expanded category pickers (Income: Salary, Business, Freelance, … | Expense: Food, Groceries, Rent, Utilities, …).
 
 ---
 
@@ -55,8 +65,9 @@ CashKeeper is designed to help you manage your finances effortlessly, with a foc
 - **Income & Expense Tracking:** Add, edit, view, and search transactions
 - **Advanced Analytics:**
   - Bar charts for income and expenses (real-time, filterable)
-  - Filter by month, year, or custom date range 📆
+  - Daily/Monthly toggles and accurate date-wise grouping 📆
 - **Dashboard:** Daily/monthly expense summaries
+- **Category Totals:** Automatic accumulation per category using atomic Firebase Transactions
 - **Profile Management:** View & update profile, upload image 👥
 - **Export:** Export all data as CSV 📁
 - **Modern UI:** Material Components, custom fonts (Montserrat, Roboto), responsive layouts
@@ -114,7 +125,9 @@ app/src/main/res/menu/
 ## 🔗 Firebase Data Structure
 - `/ExpenseData/{uid}/` — All expense entries for user
 - `/IncomeData/{uid}/` — All income entries for user
-- Each entry: `{ amount, type, note, id, date }`
+- Each entry: `{ amount, type, note, id, date, timestamp }`
+- `/IncomeCategoryTotals/{uid}/{category}` — Running totals per category (atomic increments)
+- `/ExpenseCategoryTotals/{uid}/{category}` — Running totals per category (atomic increments)
 - `/ProfileImages/{uid}/` — Profile images
 
 
@@ -159,6 +172,13 @@ app/src/main/res/menu/
    - Uses downloadable fonts (no setup needed)
    - Colors in `res/values/colors.xml`
 5. **Build & Run:** Sync Gradle, build, and run on device/emulator
+
+### Data & Ordering Notes
+- We store both a human‑readable `date` (e.g., `Jun 20, 2025`) and a machine‑sortable `timestamp` (epoch millis).
+- Queries are made with `orderByChild("timestamp")` so lists and totals are truly date-wise even if devices have different locales.
+
+### Category Accumulation
+- Each time you add an entry, we increment `/IncomeCategoryTotals/{uid}/{category}` or `/ExpenseCategoryTotals/{uid}/{category}` atomically via Firebase Transactions. This ensures totals are race‑condition safe even across multiple devices.
 
 6. **Sign in or register to use all features**
 
@@ -232,7 +252,8 @@ MIT License (see LICENSE file)
         "amount": 5000,
         "type": "Salary",
         "note": "June Salary",
-        "date": "2025-06-01"
+        "date": "Jun 01, 2025",
+        "timestamp": 1759344000000
       }
     }
   }
@@ -248,8 +269,21 @@ MIT License (see LICENSE file)
         "amount": 2000,
         "type": "Groceries",
         "note": "Weekly groceries",
-        "date": "2025-06-02"
+        "date": "Jun 02, 2025",
+        "timestamp": 1759430400000
       }
+    }
+  }
+}
+```
+
+#### Category Totals Example
+```json
+{
+  "ExpenseCategoryTotals": {
+    "uid123": {
+      "Groceries": 12450,
+      "Rent": 15000
     }
   }
 }
