@@ -433,11 +433,33 @@ public class DashboardFragment extends Fragment {
 
                 if(mAuth.getCurrentUser()!=null) {
                     String id = mIncomeDatabase.push().getKey();
-                    String mDate = DateFormat.getDateInstance().format(new Date());
+                    if (id == null) {
+                        id = mIncomeDatabase.push().getKey();
+                    }
+                    if (id == null) {
+                        Toast.makeText(getActivity(), "Failed to create income entry. Please try again.", Toast.LENGTH_SHORT).show();
+                        Log.e("DashboardFragment", "Income push key is null");
+                        return;
+                    }
+                    // Use consistent date format across app
+                    String mDate = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(new Date());
                     Data data = new Data(ouramountint, type, note, id, mDate);
 
-                    mIncomeDatabase.child(id).setValue(data);
-                    Toast.makeText(getActivity(),"Data ADDED",Toast.LENGTH_SHORT).show();
+                    mIncomeDatabase.child(id).setValue(data)
+                            .addOnCompleteListener(task -> {
+                                if (task.isSuccessful()) {
+                                    Toast.makeText(getActivity(), "Income added", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(getActivity(), "Failed to add income", Toast.LENGTH_SHORT).show();
+                                    if (task.getException() != null) {
+                                        Log.e("DashboardFragment", "Income add failed", task.getException());
+                                    }
+                                }
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(getActivity(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                Log.e("DashboardFragment", "Income add error", e);
+                            });
                 }
 
                 ftAnimation();
