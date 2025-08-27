@@ -51,6 +51,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -94,6 +96,8 @@ public class DashboardFragment extends Fragment {
     private FirebaseAuth mAuth;
     private DatabaseReference mIncomeDatabase;
     private DatabaseReference mExpenseDatabase;
+    private DatabaseReference mIncomeCategoryTotals;
+    private DatabaseReference mExpenseCategoryTotals;
 
     //recycler view
 
@@ -116,9 +120,13 @@ public class DashboardFragment extends Fragment {
 
             mIncomeDatabase = FirebaseDatabase.getInstance().getReference().child("IncomeData").child(uid);
             mExpenseDatabase = FirebaseDatabase.getInstance().getReference().child("ExpenseData").child(uid);
+            mIncomeCategoryTotals = FirebaseDatabase.getInstance().getReference().child("IncomeCategoryTotals").child(uid);
+            mExpenseCategoryTotals = FirebaseDatabase.getInstance().getReference().child("ExpenseCategoryTotals").child(uid);
             // Speed: enable local cache sync for these paths
             mIncomeDatabase.keepSynced(true);
             mExpenseDatabase.keepSynced(true);
+            mIncomeCategoryTotals.keepSynced(true);
+            mExpenseCategoryTotals.keepSynced(true);
         }
 
 
@@ -211,7 +219,7 @@ public class DashboardFragment extends Fragment {
         });
 
         // Limit totals to recent entries to reduce initial load
-        final Query expenseTotalsQuery = mExpenseDatabase.orderByChild("date").limitToLast(180);
+        final Query expenseTotalsQuery = mExpenseDatabase.orderByChild("timestamp").limitToLast(180);
         expenseTotalsQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -240,7 +248,7 @@ public class DashboardFragment extends Fragment {
 
         //calc total income
 
-        final Query incomeTotalsQuery = mIncomeDatabase.orderByChild("date").limitToLast(180);
+        final Query incomeTotalsQuery = mIncomeDatabase.orderByChild("timestamp").limitToLast(180);
         incomeTotalsQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -386,7 +394,7 @@ public class DashboardFragment extends Fragment {
         Spinner typeSpinner = myviewm.findViewById(R.id.type_spinner);
         if (typeSpinner != null) {
             typeSpinner.setVisibility(View.VISIBLE);
-            String[] incomeCategories = new String[]{"Salary", "Business", "Investment", "Gift", "Other"};
+            String[] incomeCategories = new String[]{"Salary", "Business", "Investment", "Freelance", "Interest", "Rent", "Dividends", "Gift", "Refunds", "Other"};
             ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item, incomeCategories);
             typeSpinner.setAdapter(adapter);
         }
@@ -444,11 +452,38 @@ public class DashboardFragment extends Fragment {
                     // Use consistent date format across app
                     String mDate = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(new Date());
                     Data data = new Data(ouramountint, type, note, id, mDate);
+                    // Also store sortable timestamp for ordering
+                    Map<String, Object> withTimestamp = new HashMap<>();
+                    withTimestamp.put("amount", data.getAmount());
+                    withTimestamp.put("type", data.getType());
+                    withTimestamp.put("note", data.getNote());
+                    withTimestamp.put("id", data.getId());
+                    withTimestamp.put("date", data.getDate());
+                    withTimestamp.put("timestamp", System.currentTimeMillis());
 
-                    mIncomeDatabase.child(id).setValue(data)
+                    mIncomeDatabase.child(id).setValue(withTimestamp)
                             .addOnCompleteListener(task -> {
                                 if (task.isSuccessful()) {
                                     Toast.makeText(getActivity(), "Income added", Toast.LENGTH_SHORT).show();
+                                    // Increment category total atomically
+                                    final String cat = data.getType();
+                                    mIncomeCategoryTotals.child(cat).runTransaction(new Transaction.Handler() {
+                                        @NonNull
+                                        @Override
+                                        public Transaction.Result doTransaction(@NonNull MutableData currentData) {
+                                            Long current = currentData.getValue(Long.class);
+                                            if (current == null) current = 0L;
+                                            currentData.setValue(current + data.getAmount());
+                                            return Transaction.success(currentData);
+                                        }
+
+                                        @Override
+                                        public void onComplete(@androidx.annotation.Nullable DatabaseError error, boolean committed, @androidx.annotation.Nullable DataSnapshot currentData) {
+                                            if (error != null) {
+                                                Log.e("DashboardFragment", "Income category total update failed", error.toException());
+                                            }
+                                        }
+                                    });
                                 } else {
                                     Toast.makeText(getActivity(), "Failed to add income", Toast.LENGTH_SHORT).show();
                                     if (task.getException() != null) {
@@ -490,7 +525,10 @@ public class DashboardFragment extends Fragment {
         Spinner typeSpinner = myviewm.findViewById(R.id.type_spinner);
         if (typeSpinner != null) {
             typeSpinner.setVisibility(View.VISIBLE);
-            String[] expenseCategories = new String[]{"Food", "Transport", "Shopping", "Bills", "Other"};
+            String[] expenseCategories = new String[]{
+                    "Food", "Groceries", "Transport", "Fuel", "Shopping", "Bills", "Rent", "Utilities",
+                    "Healthcare", "Education", "Entertainment", "Travel", "EMI", "Subscriptions", "Gifts", "Other"
+            };
             ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item, expenseCategories);
             typeSpinner.setAdapter(adapter);
         }
@@ -538,7 +576,43 @@ public class DashboardFragment extends Fragment {
                     String id = mExpenseDatabase.push().getKey();
                     String mDate = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(new Date());
                     Data data = new Data(ouramountinte, type, note, id, mDate);
-                    mExpenseDatabase.child(id).setValue(data);
+                    Map<String, Object> withTimestamp = new HashMap<>();
+                    withTimestamp.put("amount", data.getAmount());
+                    withTimestamp.put("type", data.getType());
+                    withTimestamp.put("note", data.getNote());
+                    withTimestamp.put("id", data.getId());
+                    withTimestamp.put("date", data.getDate());
+                    withTimestamp.put("timestamp", System.currentTimeMillis());
+
+                    mExpenseDatabase.child(id).setValue(withTimestamp)
+                            .addOnCompleteListener(task -> {
+                                if (task.isSuccessful()) {
+                                    // Increment expense category totals atomically
+                                    final String cat = data.getType();
+                                    mExpenseCategoryTotals.child(cat).runTransaction(new Transaction.Handler() {
+                                        @NonNull
+                                        @Override
+                                        public Transaction.Result doTransaction(@NonNull MutableData currentData) {
+                                            Long current = currentData.getValue(Long.class);
+                                            if (current == null) current = 0L;
+                                            currentData.setValue(current + data.getAmount());
+                                            return Transaction.success(currentData);
+                                        }
+
+                                        @Override
+                                        public void onComplete(@androidx.annotation.Nullable DatabaseError error, boolean committed, @androidx.annotation.Nullable DataSnapshot currentData) {
+                                            if (error != null) {
+                                                Log.e("DashboardFragment", "Expense category total update failed", error.toException());
+                                            }
+                                        }
+                                    });
+                                } else {
+                                    if (task.getException() != null) {
+                                        Log.e("DashboardFragment", "Expense add failed", task.getException());
+                                    }
+                                }
+                            })
+                            .addOnFailureListener(e -> Log.e("DashboardFragment", "Expense add error", e));
                     Toast.makeText(getActivity(),"Data ADDED",Toast.LENGTH_SHORT).show();
                 }
                 ftAnimation();
@@ -559,7 +633,7 @@ public class DashboardFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        Query incomeListQuery = mIncomeDatabase.orderByChild("date").limitToLast(50);
+        Query incomeListQuery = mIncomeDatabase.orderByChild("timestamp").limitToLast(50);
         FirebaseRecyclerAdapter<Data,IncomeViewHolder>incomeAdapter=new FirebaseRecyclerAdapter<Data, IncomeViewHolder>
                 (
                         Data.class,
@@ -576,7 +650,7 @@ public class DashboardFragment extends Fragment {
         };
         mRecyclerIncome.setAdapter(incomeAdapter);
 
-        Query expenseListQuery = mExpenseDatabase.orderByChild("date").limitToLast(50);
+        Query expenseListQuery = mExpenseDatabase.orderByChild("timestamp").limitToLast(50);
         FirebaseRecyclerAdapter<Data,ExpenseViewHolder>expenseAdapter=new FirebaseRecyclerAdapter<Data, ExpenseViewHolder>
                 (Data.class,R.layout.dashboard_expense,DashboardFragment.ExpenseViewHolder.class,expenseListQuery) {
             @Override
