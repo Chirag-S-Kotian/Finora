@@ -123,25 +123,66 @@ public class ExpenseFragment extends Fragment {
         btnDelete.setVisibility(View.GONE); // Hide delete button for add
         btnUpdate.setText("Add");
 
+        // Constraints & UX
+        final int MAX_INPUT_LENGTH = 12;
+        edtAmount.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(MAX_INPUT_LENGTH)});
+        edtType.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(MAX_INPUT_LENGTH)});
+        edtNote.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(40)});
+        btnUpdate.setEnabled(false);
+
+        android.text.TextWatcher watcher = new android.text.TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override public void afterTextChanged(android.text.Editable s) {
+                String amountStr = edtAmount.getText().toString().trim();
+                String typeStr = edtType.getText().toString().trim();
+                boolean hasSpinner = typeSpinner.getSelectedItem() != null;
+                boolean amountOk = false;
+                try { amountOk = Integer.parseInt(amountStr) > 0; } catch (Exception ignored) {}
+                boolean typeOk = !typeStr.isEmpty() || hasSpinner;
+                btnUpdate.setEnabled(amountOk && typeOk);
+            }
+        };
+        edtAmount.addTextChangedListener(watcher);
+        edtType.addTextChangedListener(watcher);
+        typeSpinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+            @Override public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) { watcher.afterTextChanged(null); }
+            @Override public void onNothingSelected(android.widget.AdapterView<?> parent) { watcher.afterTextChanged(null); }
+        });
+
         AlertDialog dialog = builder.create();
         btnUpdate.setOnClickListener(v -> {
             String amountStr = edtAmount.getText().toString().trim();
-            String typeStr = edtType.getText().toString().trim();
+            String typeStr = edtType.getText().toString().trim().replaceAll("\\s+"," ");
             if (typeStr.isEmpty()) {
                 typeStr = typeSpinner.getSelectedItem() != null ? typeSpinner.getSelectedItem().toString() : "Other";
             }
-            String noteStr = edtNote.getText().toString().trim();
-            if (amountStr.isEmpty() || typeStr.isEmpty()) {
-                if (edtAmount.getText().toString().trim().isEmpty()) edtAmount.setError("Required");
-                if (edtType.getText().toString().trim().isEmpty()) edtType.setError("Required");
+            String noteStr = edtNote.getText().toString().trim().replaceAll("\\s+"," ");
+            int amount;
+            try {
+                amount = Integer.parseInt(amountStr);
+                if (amount <= 0) { edtAmount.setError("Enter a positive amount"); return; }
+            } catch (NumberFormatException e) {
+                edtAmount.setError("Enter a valid number");
                 return;
             }
-            int amount = Integer.parseInt(amountStr);
             String id = mExpenseDatabase.push().getKey();
+            if (id == null) {
+                android.widget.Toast.makeText(getActivity(), "Unable to create entry. Try again.", android.widget.Toast.LENGTH_SHORT).show();
+                return;
+            }
             String date = java.text.DateFormat.getDateInstance().format(new java.util.Date());
             Data data = new Data(amount, typeStr, noteStr, id, date);
-            mExpenseDatabase.child(id).setValue(data);
-            dialog.dismiss();
+            mExpenseDatabase.child(id).setValue(data)
+                    .addOnCompleteListener(t -> {
+                        if (t.isSuccessful()) {
+                            android.widget.Toast.makeText(getActivity(), "Expense added", android.widget.Toast.LENGTH_SHORT).show();
+                            dialog.dismiss();
+                        } else {
+                            android.widget.Toast.makeText(getActivity(), "Failed to add expense", android.widget.Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnFailureListener(e -> android.widget.Toast.makeText(getActivity(), e.getMessage(), android.widget.Toast.LENGTH_LONG).show());
         });
         dialog.show();
     }
@@ -239,30 +280,72 @@ public class ExpenseFragment extends Fragment {
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                type = edtType.getText().toString().trim();
-                note = edtNote.getText().toString().trim();
+                type = edtType.getText().toString().trim().replaceAll("\\s+"," ");
+                note = edtNote.getText().toString().trim().replaceAll("\\s+"," ");
 
-                String mdAmount = String.valueOf(amount);
-                mdAmount = edtAmount.getText().toString().trim();
-
-                int myAmount = Integer.parseInt(mdAmount);
+                String mdAmount = edtAmount.getText().toString().trim();
+                if (mdAmount.isEmpty()) {
+                    edtAmount.setError("Amount is required");
+                    return;
+                }
+                if (type.isEmpty()) {
+                    edtType.setError("Type is required");
+                    return;
+                }
+                int myAmount;
+                try {
+                    myAmount = Integer.parseInt(mdAmount);
+                    if (myAmount <= 0) { edtAmount.setError("Enter a positive amount"); return; }
+                } catch (NumberFormatException e) {
+                    edtAmount.setError("Enter a valid number");
+                    return;
+                }
 
                 String mDate = DateFormat.getDateInstance().format(new Date());
 
                 Data data = new Data(myAmount, type, note, post_key, mDate);
 
-                mExpenseDatabase.child(post_key).setValue(data);
-
-                dialog.dismiss();
+                if (post_key == null) {
+                    android.widget.Toast.makeText(getActivity(), "Invalid item. Please refresh.", android.widget.Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                mExpenseDatabase.child(post_key).setValue(data)
+                        .addOnCompleteListener(t -> {
+                            if (t.isSuccessful()) {
+                                android.widget.Toast.makeText(getActivity(), "Expense updated", android.widget.Toast.LENGTH_SHORT).show();
+                                dialog.dismiss();
+                            } else {
+                                android.widget.Toast.makeText(getActivity(), "Update failed", android.widget.Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .addOnFailureListener(e -> android.widget.Toast.makeText(getActivity(), e.getMessage(), android.widget.Toast.LENGTH_LONG).show());
             }
         });
 
         btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mExpenseDatabase.child(post_key).removeValue();
-
-                dialog.dismiss();
+                if (post_key == null) {
+                    android.widget.Toast.makeText(getActivity(), "Invalid item. Please refresh.", android.widget.Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                new AlertDialog.Builder(getActivity())
+                        .setTitle("Delete expense")
+                        .setMessage("Are you sure you want to delete this entry?")
+                        .setPositiveButton("Delete", (d, which) -> {
+                            mExpenseDatabase.child(post_key).removeValue()
+                                    .addOnCompleteListener(t -> {
+                                        if (t.isSuccessful()) {
+                                            android.widget.Toast.makeText(getActivity(), "Expense deleted", android.widget.Toast.LENGTH_SHORT).show();
+                                            dialog.dismiss();
+                                        } else {
+                                            android.widget.Toast.makeText(getActivity(), "Delete failed", android.widget.Toast.LENGTH_SHORT).show();
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> android.widget.Toast.makeText(getActivity(), e.getMessage(), android.widget.Toast.LENGTH_LONG).show());
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .show();
             }
         });
         dialog.show();
